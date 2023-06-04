@@ -1,0 +1,6 @@
+#!/bin/sh
+go mod download
+go fmt ./...
+go vet ./...
+go test ./__test__
+

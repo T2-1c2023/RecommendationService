@@ -1,0 +1,58 @@
+package controller
+
+import (
+	"net/http"
+
+	"github.com/T2-1c2023/RecommendationService/app/model"
+	"github.com/T2-1c2023/RecommendationService/app/persistence"
+	"github.com/gin-gonic/gin"
+)
+
+type ProximityRuleController struct {
+	Repo persistence.RulesPersistence
+}
+
+// ModifyProximityRule     	godoc
+// @Summary      						Update the maximum radius for recommended trainings.
+// @Description  						Update the maximum radius for recommended trainings.
+// @Tags										Proximity Rule
+// @Accept									json
+// @Produce									json
+// @Param										rule body ProximityRule true "Proximity rule changes"
+// @Success      						201
+// @Failure									400
+// @Failure									500
+// @Router       						/rules/proximity [patch]
+func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) {
+	var input model.ProximityRule
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	err = controller.Repo.UpdateProximityRule(&input)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})
+}
+
+// GetProximityRule     		godoc
+// @Summary      						Get the current settings of the proximity rule.
+// @Description  						Get the current settings of the proximity rule.
+// @Tags										Proximity Rule
+// @Produce									json
+// @Success      						200 {object} ProximityRule
+// @Failure									500
+// @Router       						/rules/proximity [get]
+func (controller *ProximityRuleController) GetProximityRule(c *gin.Context) {
+	rule, err := controller.Repo.GetProximityRule()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, rule)
+}
