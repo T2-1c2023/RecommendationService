@@ -13,8 +13,9 @@ import (
 var ctx = context.Background()
 
 func initDb() *mongo.Client {
-	clientOptions := options.Client().ApplyURI(os.Getenv("DATABASE_URL"))
-	client, err := mongo.Connect(ctx, clientOptions)
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(os.Getenv("DATABASE_URL")).SetServerAPIOptions(serverAPI)
+	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		panic(err)
 	}
