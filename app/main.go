@@ -10,6 +10,7 @@ import (
 	"github.com/T2-1c2023/RecommendationService/app/controller"
 	"github.com/T2-1c2023/RecommendationService/app/persistence"
 	routes "github.com/T2-1c2023/RecommendationService/app/routes"
+	"github.com/T2-1c2023/RecommendationService/app/services"
 	config "github.com/T2-1c2023/RecommendationService/config"
 	_ "github.com/T2-1c2023/RecommendationService/docs"
 )
@@ -23,14 +24,25 @@ func main() {
 	repo := persistence.RulesRepository{
 		Collection: client.Database("recDB").Collection("rules"),
 	}
+	userService := services.UserService{}
+	trainingService := services.TrainingService{}
+
 	proximityController := controller.ProximityRuleController{
 		Repo: &repo,
 	}
 	interestsController := controller.InterestsRuleController{
 		Repo: &repo,
 	}
+	recommendationController := controller.RecommendationController{
+		Repo:            &repo,
+		UserService:     &userService,
+		TrainingService: &trainingService,
+	}
 
-	router := routes.SetupRouter(&proximityController, &interestsController)
+	router := routes.SetupRouter(
+		&proximityController,
+		&interestsController,
+		&recommendationController)
 
 	port := os.Getenv("PORT")
 	if port == "" {

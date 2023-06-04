@@ -16,14 +16,22 @@ import (
 )
 
 func TestUpdateProximityRule(t *testing.T) {
-	rulesRepositoryMock := mock.RulesRepositoryMock{}
+	rulesRepositoryMock := mock.NewRulesRepositoryMock(false, false)
+	trainingServiceMock := mock.NewTrainingServiceMock()
+	userServiceMock := mock.NewUserServiceMock()
+	recommendationController := controller.RecommendationController{
+		Repo:            &rulesRepositoryMock,
+		UserService:     &userServiceMock,
+		TrainingService: &trainingServiceMock,
+	}
 	proximityRuleController := controller.ProximityRuleController{
 		Repo: &rulesRepositoryMock,
 	}
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
-	router := routes.SetupRouter(&proximityRuleController, &interestsRuleController)
+	router := routes.SetupRouter(&proximityRuleController,
+		&interestsRuleController, &recommendationController)
 
 	proximityRule := model.ProximityRule{
 		Radius:  3,
@@ -33,49 +41,79 @@ func TestUpdateProximityRule(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Create a test HTTP request to the / endpoint
 	req, _ := http.NewRequest(http.MethodPatch, "/rules/proximity", bytes.NewBuffer(payload))
 
-	// Create a test HTTP recorder
+	userInfo, _ := json.Marshal(
+		struct {
+			Id      int  `json:"id"`
+			IsAdmin bool `json:"is_admin"`
+		}{
+			Id:      1,
+			IsAdmin: true,
+		})
+	req.Header.Set("user_info", string(userInfo))
+
 	recorder := httptest.NewRecorder()
 
-	// Serve the request and record the response
 	router.ServeHTTP(recorder, req)
 
 	assert.Equal(t, 201, recorder.Code)
 }
 
 func TestGetProximityRule(t *testing.T) {
-	rulesRepositoryMock := mock.RulesRepositoryMock{}
+	rulesRepositoryMock := mock.NewRulesRepositoryMock(false, false)
+	trainingServiceMock := mock.NewTrainingServiceMock()
+	userServiceMock := mock.NewUserServiceMock()
+	recommendationController := controller.RecommendationController{
+		Repo:            &rulesRepositoryMock,
+		UserService:     &userServiceMock,
+		TrainingService: &trainingServiceMock,
+	}
 	proximityRuleController := controller.ProximityRuleController{
 		Repo: &rulesRepositoryMock,
 	}
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
-	router := routes.SetupRouter(&proximityRuleController, &interestsRuleController)
+	router := routes.SetupRouter(&proximityRuleController,
+		&interestsRuleController, &recommendationController)
 
-	// Create a test HTTP request to the / endpoint
 	req, _ := http.NewRequest(http.MethodGet, "/rules/proximity", nil)
 
-	// Create a test HTTP recorder
+	userInfo, _ := json.Marshal(
+		struct {
+			Id      int  `json:"id"`
+			IsAdmin bool `json:"is_admin"`
+		}{
+			Id:      1,
+			IsAdmin: true,
+		})
+	req.Header.Set("user_info", string(userInfo))
+
 	recorder := httptest.NewRecorder()
 
-	// Serve the request and record the response
 	router.ServeHTTP(recorder, req)
 
 	assert.Equal(t, 200, recorder.Code)
 }
 
 func TestUpdateProximityRuleError(t *testing.T) {
-	rulesRepositoryMock := mock.ErrorRulesRepositoryMock{}
+	rulesRepositoryMock := mock.NewErrorRulesRepositoryMock()
+	trainingServiceMock := mock.NewTrainingServiceMock()
+	userServiceMock := mock.NewUserServiceMock()
+	recommendationController := controller.RecommendationController{
+		Repo:            &rulesRepositoryMock,
+		UserService:     &userServiceMock,
+		TrainingService: &trainingServiceMock,
+	}
 	proximityRuleController := controller.ProximityRuleController{
 		Repo: &rulesRepositoryMock,
 	}
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
-	router := routes.SetupRouter(&proximityRuleController, &interestsRuleController)
+	router := routes.SetupRouter(&proximityRuleController,
+		&interestsRuleController, &recommendationController)
 
 	proximityRule := model.ProximityRule{
 		Radius:  3,
@@ -85,35 +123,58 @@ func TestUpdateProximityRuleError(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Create a test HTTP request to the / endpoint
+
 	req, _ := http.NewRequest(http.MethodPatch, "/rules/proximity", bytes.NewBuffer(payload))
 
-	// Create a test HTTP recorder
+	userInfo, _ := json.Marshal(
+		struct {
+			Id      int  `json:"id"`
+			IsAdmin bool `json:"is_admin"`
+		}{
+			Id:      1,
+			IsAdmin: true,
+		})
+	req.Header.Set("user_info", string(userInfo))
+
 	recorder := httptest.NewRecorder()
 
-	// Serve the request and record the response
 	router.ServeHTTP(recorder, req)
 
 	assert.Equal(t, 500, recorder.Code)
 }
 
 func TestGetProximityRuleError(t *testing.T) {
-	rulesRepositoryMock := mock.ErrorRulesRepositoryMock{}
+	rulesRepositoryMock := mock.NewErrorRulesRepositoryMock()
+	trainingServiceMock := mock.NewTrainingServiceMock()
+	userServiceMock := mock.NewUserServiceMock()
+	recommendationController := controller.RecommendationController{
+		Repo:            &rulesRepositoryMock,
+		UserService:     &userServiceMock,
+		TrainingService: &trainingServiceMock,
+	}
 	proximityRuleController := controller.ProximityRuleController{
 		Repo: &rulesRepositoryMock,
 	}
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
-	router := routes.SetupRouter(&proximityRuleController, &interestsRuleController)
+	router := routes.SetupRouter(&proximityRuleController,
+		&interestsRuleController, &recommendationController)
 
-	// Create a test HTTP request to the / endpoint
 	req, _ := http.NewRequest(http.MethodGet, "/rules/proximity", nil)
 
-	// Create a test HTTP recorder
+	userInfo, _ := json.Marshal(
+		struct {
+			Id      int  `json:"id"`
+			IsAdmin bool `json:"is_admin"`
+		}{
+			Id:      1,
+			IsAdmin: true,
+		})
+	req.Header.Set("user_info", string(userInfo))
+
 	recorder := httptest.NewRecorder()
 
-	// Serve the request and record the response
 	router.ServeHTTP(recorder, req)
 
 	assert.Equal(t, 500, recorder.Code)

@@ -32,6 +32,44 @@
                 }
             }
         },
+        "/recommended": {
+            "get": {
+                "description": "Get recommended trainings according to current ruleset.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recommendations"
+                ],
+                "summary": "Get recommended trainings according to current ruleset.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Proximity rule changes",
+                        "name": "user_info",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Training"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
         "/rules/interests": {
             "get": {
                 "description": "Get the current settings of the interests rule.",
@@ -42,11 +80,20 @@
                     "Interests Rule"
                 ],
                 "summary": "Get the current settings of the interests rule.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Proximity rule changes",
+                        "name": "user_info",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.InterestsRule"
+                            "$ref": "#/definitions/model.InterestsRule"
                         }
                     },
                     "500": {
@@ -68,12 +115,19 @@
                 "summary": "Update the interests rule' status for recommended trainings.",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Proximity rule changes",
+                        "name": "user_info",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Interests rule changes",
                         "name": "rule",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.InterestsRule"
+                            "$ref": "#/definitions/model.InterestsRule"
                         }
                     }
                 ],
@@ -100,11 +154,20 @@
                     "Proximity Rule"
                 ],
                 "summary": "Get the current settings of the proximity rule.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Proximity rule changes",
+                        "name": "user_info",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.ProximityRule"
+                            "$ref": "#/definitions/model.ProximityRule"
                         }
                     },
                     "500": {
@@ -126,12 +189,19 @@
                 "summary": "Update the maximum radius for recommended trainings.",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Proximity rule changes",
+                        "name": "user_info",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Proximity rule changes",
                         "name": "rule",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.ProximityRule"
+                            "$ref": "#/definitions/model.ProximityRule"
                         }
                     }
                 ],
@@ -164,28 +234,53 @@
                 }
             }
         },
-        "controller.InterestsRule": {
+        "model.InterestsRule": {
             "type": "object",
-            "required": [
-                "enabled"
-            ],
             "properties": {
                 "enabled": {
                     "type": "boolean"
                 }
             }
         },
-        "controller.ProximityRule": {
+        "model.ProximityRule": {
             "type": "object",
-            "required": [
-                "enabled",
-                "radius"
-            ],
             "properties": {
                 "enabled": {
                     "type": "boolean"
                 },
                 "radius": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Training": {
+            "type": "object",
+            "properties": {
+                "blocked": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "string"
+                },
+                "severity": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "trainer_id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "type_id": {
                     "type": "integer"
                 }
             }

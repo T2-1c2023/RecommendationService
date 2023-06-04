@@ -13,14 +13,22 @@ import (
 )
 
 func TestGetStatus(t *testing.T) {
-	rulesRepositoryMock := mock.RulesRepositoryMock{}
+	rulesRepositoryMock := mock.NewRulesRepositoryMock(false, false)
+	trainingServiceMock := mock.NewTrainingServiceMock()
+	userServiceMock := mock.NewUserServiceMock()
+	recommendationController := controller.RecommendationController{
+		Repo:            &rulesRepositoryMock,
+		UserService:     &userServiceMock,
+		TrainingService: &trainingServiceMock,
+	}
 	proximityRuleController := controller.ProximityRuleController{
 		Repo: &rulesRepositoryMock,
 	}
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
-	router := routes.SetupRouter(&proximityRuleController, &interestsRuleController)
+	router := routes.SetupRouter(&proximityRuleController,
+		&interestsRuleController, &recommendationController)
 
 	// Create a test HTTP request to the / endpoint
 	req, _ := http.NewRequest(http.MethodGet, "/", nil)

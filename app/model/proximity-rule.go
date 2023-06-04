@@ -1,6 +1,6 @@
 package model
 
 type ProximityRule struct {
-	Radius  uint `json:"radius" binding:"required"`
-	Enabled bool `json:"enabled" binding:"required"`
+	Radius  uint `json:"radius"`
+	Enabled bool `json:"enabled"`
 }

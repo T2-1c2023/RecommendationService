@@ -8,22 +8,38 @@ definitions:
       last_response:
         type: string
     type: object
-  controller.InterestsRule:
+  model.InterestsRule:
     properties:
       enabled:
         type: boolean
-    required:
-    - enabled
     type: object
-  controller.ProximityRule:
+  model.ProximityRule:
     properties:
       enabled:
         type: boolean
       radius:
         type: integer
-    required:
-    - enabled
-    - radius
+    type: object
+  model.Training:
+    properties:
+      blocked:
+        type: boolean
+      description:
+        type: string
+      id:
+        type: integer
+      score:
+        type: string
+      severity:
+        type: integer
+      title:
+        type: string
+      trainer_id:
+        type: integer
+      type:
+        type: string
+      type_id:
+        type: integer
     type: object
 info:
   contact: {}
@@ -48,16 +64,47 @@ paths:
           schema:
             $ref: '#/definitions/controller.HealthResponse'
       summary: Get the service's health status.
-  /rules/interests:
+  /recommended:
     get:
-      description: Get the current settings of the interests rule.
+      description: Get recommended trainings according to current ruleset.
+      parameters:
+      - description: Proximity rule changes
+        in: header
+        name: user_info
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.InterestsRule'
+            items:
+              $ref: '#/definitions/model.Training'
+            type: array
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Get recommended trainings according to current ruleset.
+      tags:
+      - Recommendations
+  /rules/interests:
+    get:
+      description: Get the current settings of the interests rule.
+      parameters:
+      - description: Proximity rule changes
+        in: header
+        name: user_info
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.InterestsRule'
         "500":
           description: Internal Server Error
       summary: Get the current settings of the interests rule.
@@ -68,12 +115,17 @@ paths:
       - application/json
       description: Update the interests rule' status for recommended trainings.
       parameters:
+      - description: Proximity rule changes
+        in: header
+        name: user_info
+        required: true
+        type: string
       - description: Interests rule changes
         in: body
         name: rule
         required: true
         schema:
-          $ref: '#/definitions/controller.InterestsRule'
+          $ref: '#/definitions/model.InterestsRule'
       produces:
       - application/json
       responses:
@@ -89,13 +141,19 @@ paths:
   /rules/proximity:
     get:
       description: Get the current settings of the proximity rule.
+      parameters:
+      - description: Proximity rule changes
+        in: header
+        name: user_info
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.ProximityRule'
+            $ref: '#/definitions/model.ProximityRule'
         "500":
           description: Internal Server Error
       summary: Get the current settings of the proximity rule.
@@ -107,11 +165,16 @@ paths:
       description: Update the maximum radius for recommended trainings.
       parameters:
       - description: Proximity rule changes
+        in: header
+        name: user_info
+        required: true
+        type: string
+      - description: Proximity rule changes
         in: body
         name: rule
         required: true
         schema:
-          $ref: '#/definitions/controller.ProximityRule'
+          $ref: '#/definitions/model.ProximityRule'
       produces:
       - application/json
       responses:

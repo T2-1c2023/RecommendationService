@@ -9,16 +9,17 @@ import (
 )
 
 type ProximityRuleController struct {
-	Repo persistence.RulesPersistence
+	Repo persistence.IRulesRepository
 }
 
 // ModifyProximityRule     	godoc
 // @Summary      						Update the maximum radius for recommended trainings.
 // @Description  						Update the maximum radius for recommended trainings.
 // @Tags										Proximity Rule
+// @Param										user_info header string true "Proximity rule changes"
 // @Accept									json
 // @Produce									json
-// @Param										rule body ProximityRule true "Proximity rule changes"
+// @Param										rule body model.ProximityRule true "Proximity rule changes"
 // @Success      						201
 // @Failure									400
 // @Failure									500
@@ -44,8 +45,9 @@ func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) {
 // @Summary      						Get the current settings of the proximity rule.
 // @Description  						Get the current settings of the proximity rule.
 // @Tags										Proximity Rule
+// @Param										user_info header string true "Proximity rule changes"
 // @Produce									json
-// @Success      						200 {object} ProximityRule
+// @Success      						200 {object} model.ProximityRule
 // @Failure									500
 // @Router       						/rules/proximity [get]
 func (controller *ProximityRuleController) GetProximityRule(c *gin.Context) {

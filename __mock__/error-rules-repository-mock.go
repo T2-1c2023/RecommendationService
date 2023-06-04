@@ -8,6 +8,10 @@ import (
 
 type ErrorRulesRepositoryMock struct{}
 
+func NewErrorRulesRepositoryMock() ErrorRulesRepositoryMock {
+	return ErrorRulesRepositoryMock{}
+}
+
 func (repo *ErrorRulesRepositoryMock) GetInterestsRule() (model.InterestsRule, error) {
 	var rule model.InterestsRule
 	return rule, fmt.Errorf("Test")

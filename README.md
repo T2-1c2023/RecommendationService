@@ -1,6 +1,6 @@
 # NotificationsService
-Walking Skeleton para el microservicio de notificaciones desarrollado con `Golang` y `Gin`.
-Incluye `docker`, `docker compose`, tests unitarios con `testify`, linter, pipeline CI-CD con `Github Actions`. 
+Walking Skeleton para el microservicio de recomendaciones desarrollado con `Golang` y `Gin`.
+Incluye `docker`, `docker compose`, tests unitarios con `testify`, base de datos en `MongoDB`, linter, pipeline CI-CD con `Github Actions`. 
 
 
 # Ejecución con Docker
@@ -16,10 +16,10 @@ sh start-docker-dev-app.sh
 
 ### Comprobar que la app está corriendo con health endpoint:
 ```
-localhost:13002/health
-curl localhost:13002/health
+localhost:13003/health
+curl localhost:13003/health
 ```
-Obs: Notar que ahora el puerto es el 13002 por el mapeo de puertos que está en el archivo docker-compose.dev.yml
+Obs: Notar que ahora el puerto es el 13003 por el mapeo de puertos que está en el archivo docker-compose.dev.yml
 
 
 # Comandos auxiliares Docker

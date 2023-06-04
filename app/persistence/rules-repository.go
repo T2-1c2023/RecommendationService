@@ -9,6 +9,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+type IRulesRepository interface {
+	GetInterestsRule() (model.InterestsRule, error)
+	UpdateInterestsRule(newRule *model.InterestsRule) error
+	GetProximityRule() (model.ProximityRule, error)
+	UpdateProximityRule(newRule *model.ProximityRule) error
+}
+
 type RulesRepository struct {
 	Collection *mongo.Collection
 }
