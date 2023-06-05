@@ -3,6 +3,7 @@ package routes
 import (
 	controller "github.com/T2-1c2023/RecommendationService/app/controller"
 	"github.com/T2-1c2023/RecommendationService/app/validation"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -13,6 +14,10 @@ func SetupRouter(proximityController *controller.ProximityRuleController,
 	recommendationController *controller.RecommendationController) *gin.Engine {
 	// Create a new Gin router
 	router := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	router.Use(cors.New(config))
 
 	router.GET("/", controller.GetStatus)
 
