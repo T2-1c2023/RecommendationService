@@ -49,6 +49,36 @@
                         "name": "user_info",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Title of the training",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID of the training owner",
+                        "name": "trainer_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID of the training type",
+                        "name": "type_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Severity of the training",
+                        "name": "severity",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Whether the training is blocked",
+                        "name": "blocked",
+                        "in": "query"
                     }
                 ],
                 "responses": {

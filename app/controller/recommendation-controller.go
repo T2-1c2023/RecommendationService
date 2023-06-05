@@ -2,6 +2,8 @@ package controller
 
 import (
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/T2-1c2023/RecommendationService/app/model"
 	"github.com/T2-1c2023/RecommendationService/app/persistence"
@@ -16,8 +18,8 @@ type RecommendationController struct {
 }
 
 func (controller *RecommendationController) getTrainings(proximityRule model.ProximityRule,
-	userInfo string) ([]model.Training, error) {
-	var trainings []model.Training
+	userInfo string, queryParams map[string]string) ([]model.Training, error) {
+	trainings := []model.Training{}
 	var err error
 	if proximityRule.Enabled {
 		var closeTrainers []model.User
@@ -34,6 +36,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
 				controller.TrainingService.GetTrainingsFromTrainerId(
 					trainer.Id,
 					userInfo,
+					queryParams,
 				)
 			if err != nil {
 				return trainings, err
@@ -42,7 +45,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
 		}
 	} else {
 		trainings, err =
-			controller.TrainingService.GetAllTrainings(userInfo)
+			controller.TrainingService.GetAllTrainings(userInfo, queryParams)
 		if err != nil {
 			return trainings, err
 		}
@@ -76,11 +79,29 @@ func (controller *RecommendationController) filterTrainingsByInterests(trainings
 	return filteredTrainings
 }
 
+func (controller *RecommendationController) getQueryParams(c *gin.Context) map[string]string {
+	queryParams := make(map[string]string)
+	paramsString := os.Getenv("TRAININGS_QUERY_PARAMS")
+	params := strings.Split(paramsString, ",")
+	for _, param := range params {
+		value := c.Query(param)
+		if value != "" {
+			queryParams[param] = value
+		}
+	}
+	return queryParams
+}
+
 // GetRecommendations     	godoc
 // @Summary      						Get recommended trainings according to current ruleset.
 // @Description  						Get recommended trainings according to current ruleset.
 // @Tags										Recommendations
 // @Param										user_info header string true "Proximity rule changes"
+// @Param 									title query string false "Title of the training"
+// @Param 									trainer_id query int false "ID of the training owner"
+// @Param 									type_id query int false "ID of the training type"
+// @Param 									severity query int false "Severity of the training"
+// @Param 									blocked query bool false "Whether the training is blocked"
 // @Produce									json
 // @Success      						200 {array} model.Training
 // @Failure									500
@@ -101,7 +122,12 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
 		return
 	}
 
-	trainings, err := controller.getTrainings(proximityRule, c.GetHeader("user_info"))
+	queryParams := controller.getQueryParams(c)
+	trainings, err := controller.getTrainings(
+		proximityRule,
+		c.GetHeader("user_info"),
+		queryParams,
+	)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusServiceUnavailable,
@@ -111,7 +137,11 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
 	}
 
 	if !interestsRule.Enabled {
-		c.JSON(http.StatusOK, trainings)
+		if len(trainings) == 0 {
+			c.JSON(http.StatusOK, make([]model.Training, 0))
+		} else {
+			c.JSON(http.StatusOK, trainings)
+		}
 		return
 	}
 
@@ -125,6 +155,9 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
 	}
 
 	filteredTrainings := controller.filterTrainingsByInterests(trainings, interests)
-
-	c.JSON(http.StatusOK, filteredTrainings)
+	if len(filteredTrainings) == 0 {
+		c.JSON(http.StatusOK, make([]model.Training, 0))
+	} else {
+		c.JSON(http.StatusOK, filteredTrainings)
+	}
 }

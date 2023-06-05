@@ -29,10 +29,19 @@ func NewTrainingServiceMock() TrainingServiceMock {
 	}
 }
 
-func (service *TrainingServiceMock) GetTrainingsFromTrainerId(id int, userInfo string) ([]model.Training, error) {
+func NewEmptyTrainingServiceMock() TrainingServiceMock {
+	allTrainings := []model.Training{}
+	return TrainingServiceMock{
+		Trainings: allTrainings,
+	}
+}
+
+func (service *TrainingServiceMock) GetTrainingsFromTrainerId(id int,
+	userInfo string, queryParams map[string]string) ([]model.Training, error) {
 	return service.Trainings[:2], nil
 }
 
-func (service *TrainingServiceMock) GetAllTrainings(userInfo string) ([]model.Training, error) {
+func (service *TrainingServiceMock) GetAllTrainings(userInfo string,
+	queryParams map[string]string) ([]model.Training, error) {
 	return service.Trainings, nil
 }

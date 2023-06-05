@@ -73,6 +73,26 @@ paths:
         name: user_info
         required: true
         type: string
+      - description: Title of the training
+        in: query
+        name: title
+        type: string
+      - description: ID of the training owner
+        in: query
+        name: trainer_id
+        type: integer
+      - description: ID of the training type
+        in: query
+        name: type_id
+        type: integer
+      - description: Severity of the training
+        in: query
+        name: severity
+        type: integer
+      - description: Whether the training is blocked
+        in: query
+        name: blocked
+        type: boolean
       produces:
       - application/json
       responses:

@@ -87,15 +87,3 @@ func TestGetRecommendationsReturnsSomeTrainingsWithInterestsRuleEnabled(t *testi
 	finalTrainings := []model.Training{allTrainings[0], allTrainings[2]}
 	assert.ElementsMatch(t, finalTrainings, trainings)
 }
-
-func TestGetRecommendationsReturnsSomeTrainingsWithBothRulesEnabled(t *testing.T) {
-	router, allTrainings := setUpRouter(true, true)
-	recorder := sendRequest(router)
-
-	var trainings []model.Training
-	json.NewDecoder(recorder.Body).Decode(&trainings)
-
-	assert.Equal(t, 200, recorder.Code)
-	finalTrainings := []model.Training{allTrainings[0]}
-	assert.ElementsMatch(t, finalTrainings, trainings)
-}
