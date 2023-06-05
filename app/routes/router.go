@@ -20,19 +20,19 @@ func SetupRouter(proximityController *controller.ProximityRuleController,
 
 	router.GET("/health", controller.GetHealth)
 
-	router.PATCH("/rules/proximity",
+	router.PATCH("/recommended/rules/proximity",
 		validation.UserInfoHeaderValidator,
 		validation.AdminValidator,
 		proximityController.ModifyProximityRule)
-	router.GET("/rules/proximity",
+	router.GET("/recommended/rules/proximity",
 		validation.AdminValidator,
 		proximityController.GetProximityRule)
 
-	router.PATCH("/rules/interests",
+	router.PATCH("/recommended/rules/interests",
 		validation.UserInfoHeaderValidator,
 		validation.AdminValidator,
 		interestsController.ModifyInterestsRule)
-	router.GET("/rules/interests",
+	router.GET("/recommended/rules/interests",
 		validation.UserInfoHeaderValidator,
 		validation.AdminValidator,
 		interestsController.GetInterestsRule)

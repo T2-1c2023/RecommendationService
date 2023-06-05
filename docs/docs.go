@@ -109,7 +109,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rules/interests": {
+        "/recommended/rules/interests": {
             "get": {
                 "description": "Get the current settings of the interests rule.",
                 "produces": [
@@ -183,7 +183,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rules/proximity": {
+        "/recommended/rules/proximity": {
             "get": {
                 "description": "Get the current settings of the proximity rule.",
                 "produces": [

@@ -41,7 +41,7 @@ func TestUpdateInterestsRule(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	req, _ := http.NewRequest(http.MethodPatch, "/rules/interests", bytes.NewBuffer(payload))
+	req, _ := http.NewRequest(http.MethodPatch, "/recommended/rules/interests", bytes.NewBuffer(payload))
 
 	userInfo, _ := json.Marshal(
 		struct {
@@ -79,7 +79,7 @@ func TestGetInterestsRule(t *testing.T) {
 		&interestsRuleController, &recommendationController)
 
 	// Create a test HTTP request to the / endpoint
-	req, _ := http.NewRequest(http.MethodGet, "/rules/interests", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/recommended/rules/interests", nil)
 
 	userInfo, _ := json.Marshal(
 		struct {
@@ -126,7 +126,7 @@ func TestUpdateInterestsRuleError(t *testing.T) {
 		log.Fatal(err)
 	}
 	// Create a test HTTP request to the / endpoint
-	req, _ := http.NewRequest(http.MethodPatch, "/rules/interests", bytes.NewBuffer(payload))
+	req, _ := http.NewRequest(http.MethodPatch, "/recommended/rules/interests", bytes.NewBuffer(payload))
 
 	userInfo, _ := json.Marshal(
 		struct {
@@ -166,7 +166,7 @@ func TestGetInterestsRuleError(t *testing.T) {
 		&interestsRuleController, &recommendationController)
 
 	// Create a test HTTP request to the / endpoint
-	req, _ := http.NewRequest(http.MethodGet, "/rules/interests", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/recommended/rules/interests", nil)
 
 	userInfo, _ := json.Marshal(
 		struct {

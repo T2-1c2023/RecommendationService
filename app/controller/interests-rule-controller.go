@@ -23,7 +23,7 @@ type InterestsRuleController struct {
 // @Success      						201
 // @Failure									400
 // @Failure									500
-// @Router       						/rules/interests [patch]
+// @Router       						/recommended/rules/interests [patch]
 func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) {
 	var input model.InterestsRule
 	err := c.ShouldBindJSON(&input)
@@ -49,7 +49,7 @@ func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) {
 // @Produce									json
 // @Success      						200 {object} model.InterestsRule
 // @Failure									500
-// @Router       						/rules/interests [get]
+// @Router       						/recommended/rules/interests [get]
 func (controller *InterestsRuleController) GetInterestsRule(c *gin.Context) {
 	rule, err := controller.Repo.GetInterestsRule()
 	if err != nil {

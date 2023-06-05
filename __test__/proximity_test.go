@@ -41,7 +41,7 @@ func TestUpdateProximityRule(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	req, _ := http.NewRequest(http.MethodPatch, "/rules/proximity", bytes.NewBuffer(payload))
+	req, _ := http.NewRequest(http.MethodPatch, "/recommended/rules/proximity", bytes.NewBuffer(payload))
 
 	userInfo, _ := json.Marshal(
 		struct {
@@ -78,7 +78,7 @@ func TestGetProximityRule(t *testing.T) {
 	router := routes.SetupRouter(&proximityRuleController,
 		&interestsRuleController, &recommendationController)
 
-	req, _ := http.NewRequest(http.MethodGet, "/rules/proximity", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/recommended/rules/proximity", nil)
 
 	userInfo, _ := json.Marshal(
 		struct {
@@ -124,7 +124,7 @@ func TestUpdateProximityRuleError(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	req, _ := http.NewRequest(http.MethodPatch, "/rules/proximity", bytes.NewBuffer(payload))
+	req, _ := http.NewRequest(http.MethodPatch, "/recommended/rules/proximity", bytes.NewBuffer(payload))
 
 	userInfo, _ := json.Marshal(
 		struct {
@@ -161,7 +161,7 @@ func TestGetProximityRuleError(t *testing.T) {
 	router := routes.SetupRouter(&proximityRuleController,
 		&interestsRuleController, &recommendationController)
 
-	req, _ := http.NewRequest(http.MethodGet, "/rules/proximity", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/recommended/rules/proximity", nil)
 
 	userInfo, _ := json.Marshal(
 		struct {
