@@ -3,186 +3,99 @@ package __test__
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	mock "github.com/T2-1c2023/RecommendationService/__mock__"
-	"github.com/T2-1c2023/RecommendationService/app/controller"
 	"github.com/T2-1c2023/RecommendationService/app/model"
-	routes "github.com/T2-1c2023/RecommendationService/app/routes"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
+func sendPatchInterestsRule(router *gin.Engine,
+	interestsRule *model.InterestsRule, isAdmin bool) *httptest.ResponseRecorder {
+	payload, _ := json.Marshal(interestsRule)
+	req, _ := http.NewRequest(
+		http.MethodPatch,
+		"/recommended/rules/interests",
+		bytes.NewBuffer(payload),
+	)
+
+	userInfo := getUserInfo(isAdmin)
+	req.Header.Set("user_info", userInfo)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+	return recorder
+}
+
+func sendGetInterestsRule(router *gin.Engine, isAdmin bool) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest(http.MethodGet, "/recommended/rules/interests", nil)
+
+	userInfo := getUserInfo(isAdmin)
+	req.Header.Set("user_info", userInfo)
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	return recorder
+}
+
 func TestUpdateInterestsRule(t *testing.T) {
-	rulesRepositoryMock := mock.NewRulesRepositoryMock(false, false)
-	trainingServiceMock := mock.NewTrainingServiceMock()
-	userServiceMock := mock.NewUserServiceMock()
-	recommendationController := controller.RecommendationController{
-		Repo:            &rulesRepositoryMock,
-		UserService:     &userServiceMock,
-		TrainingService: &trainingServiceMock,
-	}
-	proximityRuleController := controller.ProximityRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	interestsRuleController := controller.InterestsRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	router := routes.SetupRouter(&proximityRuleController,
-		&interestsRuleController, &recommendationController)
+	router, _ := setUpRouter(false, false)
 
 	interestsRule := model.InterestsRule{
 		Enabled: true,
 	}
-	payload, err := json.Marshal(interestsRule)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	req, _ := http.NewRequest(http.MethodPatch, "/recommended/rules/interests", bytes.NewBuffer(payload))
-
-	userInfo, _ := json.Marshal(
-		struct {
-			Id      int  `json:"id"`
-			IsAdmin bool `json:"is_admin"`
-		}{
-			Id:      1,
-			IsAdmin: true,
-		})
-
-	req.Header.Set("user_info", string(userInfo))
-
-	recorder := httptest.NewRecorder()
-	router.ServeHTTP(recorder, req)
+	recorder := sendPatchInterestsRule(router, &interestsRule, true)
 
 	assert.Equal(t, 201, recorder.Code)
 }
 
 func TestGetInterestsRule(t *testing.T) {
-	rulesRepositoryMock := mock.NewRulesRepositoryMock(false, false)
-	trainingServiceMock := mock.NewTrainingServiceMock()
-	userServiceMock := mock.NewUserServiceMock()
-	recommendationController := controller.RecommendationController{
-		Repo:            &rulesRepositoryMock,
-		UserService:     &userServiceMock,
-		TrainingService: &trainingServiceMock,
-	}
-	proximityRuleController := controller.ProximityRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	interestsRuleController := controller.InterestsRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	router := routes.SetupRouter(&proximityRuleController,
-		&interestsRuleController, &recommendationController)
+	router, _ := setUpRouter(false, false)
 
-	// Create a test HTTP request to the / endpoint
-	req, _ := http.NewRequest(http.MethodGet, "/recommended/rules/interests", nil)
-
-	userInfo, _ := json.Marshal(
-		struct {
-			Id      int  `json:"id"`
-			IsAdmin bool `json:"is_admin"`
-		}{
-			Id:      1,
-			IsAdmin: true,
-		})
-	req.Header.Set("user_info", string(userInfo))
-
-	// Create a test HTTP recorder
-	recorder := httptest.NewRecorder()
-
-	// Serve the request and record the response
-	router.ServeHTTP(recorder, req)
+	recorder := sendGetInterestsRule(router, true)
 
 	assert.Equal(t, 200, recorder.Code)
 }
 
 func TestUpdateInterestsRuleError(t *testing.T) {
-	rulesRepositoryMock := mock.NewErrorRulesRepositoryMock()
-	trainingServiceMock := mock.NewTrainingServiceMock()
-	userServiceMock := mock.NewUserServiceMock()
-	recommendationController := controller.RecommendationController{
-		Repo:            &rulesRepositoryMock,
-		UserService:     &userServiceMock,
-		TrainingService: &trainingServiceMock,
-	}
-	proximityRuleController := controller.ProximityRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	interestsRuleController := controller.InterestsRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	router := routes.SetupRouter(&proximityRuleController,
-		&interestsRuleController, &recommendationController)
+	router, _ := setUpErrorRouter()
 
 	interestsRule := model.InterestsRule{
 		Enabled: true,
 	}
-	payload, err := json.Marshal(interestsRule)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Create a test HTTP request to the / endpoint
-	req, _ := http.NewRequest(http.MethodPatch, "/recommended/rules/interests", bytes.NewBuffer(payload))
-
-	userInfo, _ := json.Marshal(
-		struct {
-			Id      int  `json:"id"`
-			IsAdmin bool `json:"is_admin"`
-		}{
-			Id:      1,
-			IsAdmin: true,
-		})
-	req.Header.Set("user_info", string(userInfo))
-
-	// Create a test HTTP recorder
-	recorder := httptest.NewRecorder()
-
-	// Serve the request and record the response
-	router.ServeHTTP(recorder, req)
+	recorder := sendPatchInterestsRule(router, &interestsRule, true)
 
 	assert.Equal(t, 500, recorder.Code)
 }
 
 func TestGetInterestsRuleError(t *testing.T) {
-	rulesRepositoryMock := mock.NewErrorRulesRepositoryMock()
-	trainingServiceMock := mock.NewTrainingServiceMock()
-	userServiceMock := mock.NewUserServiceMock()
-	recommendationController := controller.RecommendationController{
-		Repo:            &rulesRepositoryMock,
-		UserService:     &userServiceMock,
-		TrainingService: &trainingServiceMock,
-	}
-	proximityRuleController := controller.ProximityRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	interestsRuleController := controller.InterestsRuleController{
-		Repo: &rulesRepositoryMock,
-	}
-	router := routes.SetupRouter(&proximityRuleController,
-		&interestsRuleController, &recommendationController)
+	router, _ := setUpErrorRouter()
 
-	// Create a test HTTP request to the / endpoint
-	req, _ := http.NewRequest(http.MethodGet, "/recommended/rules/interests", nil)
-
-	userInfo, _ := json.Marshal(
-		struct {
-			Id      int  `json:"id"`
-			IsAdmin bool `json:"is_admin"`
-		}{
-			Id:      1,
-			IsAdmin: true,
-		})
-	req.Header.Set("user_info", string(userInfo))
-
-	// Create a test HTTP recorder
-	recorder := httptest.NewRecorder()
-
-	// Serve the request and record the response
-	router.ServeHTTP(recorder, req)
+	recorder := sendGetInterestsRule(router, true)
 
 	assert.Equal(t, 500, recorder.Code)
+}
+
+func TestUpdateInterestsRuleReturns401IfNotAdmin(t *testing.T) {
+	router, _ := setUpRouter(false, false)
+
+	interestsRule := model.InterestsRule{
+		Enabled: true,
+	}
+
+	recorder := sendPatchInterestsRule(router, &interestsRule, false)
+
+	assert.Equal(t, 401, recorder.Code)
+}
+
+func TestGetInterestsRuleReturns401IfNotAdmin(t *testing.T) {
+	router, _ := setUpRouter(false, false)
+
+	recorder := sendGetInterestsRule(router, false)
+
+	assert.Equal(t, 401, recorder.Code)
 }
