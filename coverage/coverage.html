@@ -1,0 +1,590 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>controller: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/T2-1c2023/RecommendationService/app/controller/interests-rule-controller.go (86.7%)</option>
+				
+				<option value="file1">github.com/T2-1c2023/RecommendationService/app/controller/proximity-rule-controller.go (86.7%)</option>
+				
+				<option value="file2">github.com/T2-1c2023/RecommendationService/app/controller/recommendation-controller.go (79.7%)</option>
+				
+				<option value="file3">github.com/T2-1c2023/RecommendationService/app/controller/status-controller.go (100.0%)</option>
+				
+				<option value="file4">github.com/T2-1c2023/RecommendationService/app/model/user.go (80.0%)</option>
+				
+				<option value="file5">github.com/T2-1c2023/RecommendationService/app/routes/router.go (100.0%)</option>
+				
+				<option value="file6">github.com/T2-1c2023/RecommendationService/app/utilities/date-generator.go (100.0%)</option>
+				
+				<option value="file7">github.com/T2-1c2023/RecommendationService/app/validation/admin-validator.go (75.0%)</option>
+				
+				<option value="file8">github.com/T2-1c2023/RecommendationService/app/validation/user-info-header-validator.go (75.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package controller
+
+import (
+        "net/http"
+
+        "github.com/T2-1c2023/RecommendationService/app/model"
+        "github.com/T2-1c2023/RecommendationService/app/persistence"
+        "github.com/gin-gonic/gin"
+)
+
+type InterestsRuleController struct {
+        Repo persistence.IRulesRepository
+}
+
+// ModifyInterestsRule             godoc
+// @Summary                                                      Update the interests rule' status for recommended trainings.
+// @Description                                                  Update the interests rule' status for recommended trainings.
+// @Tags                                                                                Interests Rule
+// @Param                                                                                user_info header string true "Proximity rule changes"
+// @Accept                                                                        json
+// @Produce                                                                        json
+// @Param                                                                                rule body model.InterestsRule true "Interests rule changes"
+// @Success                                                      201
+// @Failure                                                                        400
+// @Failure                                                                        500
+// @Router                                                       /recommended/rules/interests [patch]
+func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) <span class="cov8" title="1">{
+        var input model.InterestsRule
+        err := c.ShouldBindJSON(&amp;input)
+        if err != nil </span><span class="cov0" title="0">{
+                c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+                return
+        }</span>
+
+        <span class="cov8" title="1">err = controller.Repo.UpdateInterestsRule(&amp;input)
+        if err != nil </span><span class="cov8" title="1">{
+                c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+                return
+        }</span>
+
+        <span class="cov8" title="1">c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})</span>
+}
+
+// GetInterestsRule                     godoc
+// @Summary                                                      Get the current settings of the interests rule.
+// @Description                                                  Get the current settings of the interests rule.
+// @Tags                                                                                Interests Rule
+// @Param                                                                                user_info header string true "Proximity rule changes"
+// @Produce                                                                        json
+// @Success                                                      200 {object} model.InterestsRule
+// @Failure                                                                        500
+// @Router                                                       /recommended/rules/interests [get]
+func (controller *InterestsRuleController) GetInterestsRule(c *gin.Context) <span class="cov8" title="1">{
+        rule, err := controller.Repo.GetInterestsRule()
+        if err != nil </span><span class="cov8" title="1">{
+                c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+                return
+        }</span>
+        <span class="cov8" title="1">c.JSON(http.StatusOK, rule)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package controller
+
+import (
+        "net/http"
+
+        "github.com/T2-1c2023/RecommendationService/app/model"
+        "github.com/T2-1c2023/RecommendationService/app/persistence"
+        "github.com/gin-gonic/gin"
+)
+
+type ProximityRuleController struct {
+        Repo persistence.IRulesRepository
+}
+
+// ModifyProximityRule             godoc
+// @Summary                                                      Update the maximum radius for recommended trainings.
+// @Description                                                  Update the maximum radius for recommended trainings.
+// @Tags                                                                                Proximity Rule
+// @Param                                                                                user_info header string true "Proximity rule changes"
+// @Accept                                                                        json
+// @Produce                                                                        json
+// @Param                                                                                rule body model.ProximityRule true "Proximity rule changes"
+// @Success                                                      201
+// @Failure                                                                        400
+// @Failure                                                                        500
+// @Router                                                       /recommended/rules/proximity [patch]
+func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) <span class="cov8" title="1">{
+        var input model.ProximityRule
+        err := c.ShouldBindJSON(&amp;input)
+        if err != nil </span><span class="cov0" title="0">{
+                c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+                return
+        }</span>
+
+        <span class="cov8" title="1">err = controller.Repo.UpdateProximityRule(&amp;input)
+        if err != nil </span><span class="cov8" title="1">{
+                c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+                return
+        }</span>
+
+        <span class="cov8" title="1">c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})</span>
+}
+
+// GetProximityRule                     godoc
+// @Summary                                                      Get the current settings of the proximity rule.
+// @Description                                                  Get the current settings of the proximity rule.
+// @Tags                                                                                Proximity Rule
+// @Param                                                                                user_info header string true "Proximity rule changes"
+// @Produce                                                                        json
+// @Success                                                      200 {object} model.ProximityRule
+// @Failure                                                                        500
+// @Router                                                       /recommended/rules/proximity [get]
+func (controller *ProximityRuleController) GetProximityRule(c *gin.Context) <span class="cov8" title="1">{
+        rule, err := controller.Repo.GetProximityRule()
+        if err != nil </span><span class="cov8" title="1">{
+                c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+                return
+        }</span>
+        <span class="cov8" title="1">c.JSON(http.StatusOK, rule)</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package controller
+
+import (
+        "net/http"
+        "os"
+        "strings"
+
+        "github.com/T2-1c2023/RecommendationService/app/model"
+        "github.com/T2-1c2023/RecommendationService/app/persistence"
+        "github.com/T2-1c2023/RecommendationService/app/services"
+        "github.com/gin-gonic/gin"
+)
+
+type RecommendationController struct {
+        Repo            persistence.IRulesRepository
+        UserService     services.IUserService
+        TrainingService services.ITrainingService
+}
+
+func (controller *RecommendationController) getTrainings(proximityRule model.ProximityRule,
+        userInfo string, queryParams map[string]string) ([]model.Training, error) <span class="cov8" title="1">{
+        trainings := []model.Training{}
+        var err error
+        if proximityRule.Enabled </span><span class="cov8" title="1">{
+                var closeTrainers []model.User
+                closeTrainers, err =
+                        controller.UserService.GetAllTrainersInProximity(
+                                proximityRule.Radius,
+                                userInfo,
+                        )
+                if err != nil </span><span class="cov0" title="0">{
+                        return trainings, err
+                }</span>
+                <span class="cov8" title="1">for _, trainer := range closeTrainers </span><span class="cov8" title="1">{
+                        someTrainings, err :=
+                                controller.TrainingService.GetTrainingsFromTrainerId(
+                                        trainer.Id,
+                                        userInfo,
+                                        queryParams,
+                                )
+                        if err != nil </span><span class="cov0" title="0">{
+                                return trainings, err
+                        }</span>
+                        <span class="cov8" title="1">trainings = append(trainings, someTrainings...)</span>
+                }
+        } else<span class="cov8" title="1"> {
+                trainings, err =
+                        controller.TrainingService.GetAllTrainings(userInfo, queryParams)
+                if err != nil </span><span class="cov0" title="0">{
+                        return trainings, err
+                }</span>
+        }
+        <span class="cov8" title="1">return trainings, nil</span>
+}
+
+func (controller *RecommendationController) getInterests(userInfo string) ([]model.Interest, error) <span class="cov8" title="1">{
+        var interests []model.Interest
+        userInfoObject, err := model.NewUserFromUserInfo(userInfo)
+        if err != nil </span><span class="cov0" title="0">{
+                return interests, err
+        }</span>
+        <span class="cov8" title="1">user, err := controller.UserService.GetUserById(userInfoObject.Id, userInfo)
+        if err != nil </span><span class="cov0" title="0">{
+                return interests, err
+        }</span>
+        <span class="cov8" title="1">return user.Interests, nil</span>
+}
+
+func (controller *RecommendationController) filterTrainingsByInterests(trainings []model.Training,
+        interests []model.Interest) []model.Training <span class="cov8" title="1">{
+        var filteredTrainings []model.Training
+        for _, training := range trainings </span><span class="cov8" title="1">{
+                for _, interest := range interests </span><span class="cov8" title="1">{
+                        if training.Type == interest.Description </span><span class="cov8" title="1">{
+                                filteredTrainings = append(filteredTrainings, training)
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">return filteredTrainings</span>
+}
+
+func (controller *RecommendationController) getQueryParams(c *gin.Context) map[string]string <span class="cov8" title="1">{
+        queryParams := make(map[string]string)
+        paramsString := os.Getenv("TRAININGS_QUERY_PARAMS")
+        params := strings.Split(paramsString, ",")
+        for _, param := range params </span><span class="cov8" title="1">{
+                value := c.Query(param)
+                if value != "" </span><span class="cov0" title="0">{
+                        queryParams[param] = value
+                }</span>
+        }
+        <span class="cov8" title="1">return queryParams</span>
+}
+
+// GetRecommendations             godoc
+// @Summary                                                      Get recommended trainings according to current ruleset.
+// @Description                                                  Get recommended trainings according to current ruleset.
+// @Tags                                                                                Recommendations
+// @Param                                                                                user_info header string true "Proximity rule changes"
+// @Param                                                                         title query string false "Title of the training"
+// @Param                                                                         trainer_id query int false "ID of the training owner"
+// @Param                                                                         type_id query int false "ID of the training type"
+// @Param                                                                         severity query int false "Severity of the training"
+// @Param                                                                         blocked query bool false "Whether the training is blocked"
+// @Produce                                                                        json
+// @Success                                                      200 {array} model.Training
+// @Failure                                                                        500
+// @Failure                                                                        503
+// @Router                                                       /recommended [get]
+func (controller *RecommendationController) GetRecommendations(c *gin.Context) <span class="cov8" title="1">{
+        proximityRule, err1 := controller.Repo.GetProximityRule()
+        interestsRule, err2 := controller.Repo.GetInterestsRule()
+        if err1 != nil || err2 != nil </span><span class="cov0" title="0">{
+                c.AbortWithStatusJSON(
+                        http.StatusInternalServerError,
+                        gin.H{"message": "Database error"})
+        }</span>
+
+        <span class="cov8" title="1">if !proximityRule.Enabled &amp;&amp; !interestsRule.Enabled </span><span class="cov8" title="1">{
+                trainings := []model.Training{}
+                c.JSON(http.StatusOK, trainings)
+                return
+        }</span>
+
+        <span class="cov8" title="1">queryParams := controller.getQueryParams(c)
+        trainings, err := controller.getTrainings(
+                proximityRule,
+                c.GetHeader("user_info"),
+                queryParams,
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                c.AbortWithStatusJSON(
+                        http.StatusServiceUnavailable,
+                        gin.H{"message": err.Error()},
+                )
+                return
+        }</span>
+
+        <span class="cov8" title="1">if !interestsRule.Enabled </span><span class="cov8" title="1">{
+                if len(trainings) == 0 </span><span class="cov0" title="0">{
+                        c.JSON(http.StatusOK, make([]model.Training, 0))
+                }</span> else<span class="cov8" title="1"> {
+                        c.JSON(http.StatusOK, trainings)
+                }</span>
+                <span class="cov8" title="1">return</span>
+        }
+
+        <span class="cov8" title="1">interests, err := controller.getInterests(c.GetHeader("user_info"))
+        if err != nil </span><span class="cov0" title="0">{
+                c.AbortWithStatusJSON(
+                        http.StatusServiceUnavailable,
+                        gin.H{"message": err.Error()},
+                )
+                return
+        }</span>
+
+        <span class="cov8" title="1">filteredTrainings := controller.filterTrainingsByInterests(trainings, interests)
+        if len(filteredTrainings) == 0 </span><span class="cov0" title="0">{
+                c.JSON(http.StatusOK, make([]model.Training, 0))
+        }</span> else<span class="cov8" title="1"> {
+                c.JSON(http.StatusOK, filteredTrainings)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package controller
+
+import (
+        dateGenerator "github.com/T2-1c2023/RecommendationService/app/utilities"
+        "github.com/gin-gonic/gin"
+)
+
+var creationDate string = dateGenerator.GetCurrentDate()
+
+// GetStatus     godoc
+// @Summary      Check the service's status.
+// @Description  Returns a 200 code and JSON with a message.
+// @Success      200
+// @Router       / [get]
+func GetStatus(c *gin.Context) <span class="cov8" title="1">{
+        c.JSON(200, gin.H{
+                "message": "Notifications microservice running correctly",
+        })
+}</span>
+
+type HealthResponse struct {
+        CreationDate string `json:"creation_date"`
+        LastResponse string `json:"last_response"`
+        Description  string `json:"description"`
+}
+
+// GetHealth     godoc
+// @Summary      Get the service's health status.
+// @Description  Returns a 200 code and JSON with the date the service started running and a description.
+// @Success      200 {object} HealthResponse
+// @Router       /health [get]
+func GetHealth(c *gin.Context) <span class="cov8" title="1">{
+        response := HealthResponse{
+                CreationDate: creationDate,
+                LastResponse: dateGenerator.GetCurrentDate(),
+                Description:  "Recommendations microservice for FiuFit",
+        }
+        c.JSON(200, response)
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package model
+
+import "encoding/json"
+
+type Interest struct {
+        Id          uint   `json:"id"`
+        Description string `json:"description"`
+}
+
+type User struct {
+        Id            int        `json:"id"`
+        Fullname      string     `json:"fullname"`
+        Mail          string     `json:"mail"`
+        PhoneNumber   string     `json:"phone_number"`
+        IsAthlete     bool       `json:"is_athlete"`
+        IsTrainer     bool       `json:"is_trainer"`
+        IsVerified    bool       `json:"is_verified"`
+        IsAdmin       bool       `json:"is_admin"`
+        PhotoId       string     `json:"photo_id"`
+        ExpoPushToken string     `json:"expo_push_token"`
+        Latitude      string     `json:"latitude"`
+        Longitude     string     `json:"longitude"`
+        Interests     []Interest `json:"interests"`
+}
+
+func NewUserFromUserInfo(userInfo string) (User, error) <span class="cov8" title="1">{
+        var user User
+        err := json.Unmarshal([]byte(userInfo), &amp;user)
+        if err != nil </span><span class="cov0" title="0">{
+                return user, err
+        }</span>
+        <span class="cov8" title="1">return user, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package routes
+
+import (
+        controller "github.com/T2-1c2023/RecommendationService/app/controller"
+        "github.com/T2-1c2023/RecommendationService/app/validation"
+        "github.com/gin-contrib/cors"
+        "github.com/gin-gonic/gin"
+        swaggerFiles "github.com/swaggo/files"
+        ginSwagger "github.com/swaggo/gin-swagger"
+)
+
+func SetupRouter(proximityController *controller.ProximityRuleController,
+        interestsController *controller.InterestsRuleController,
+        recommendationController *controller.RecommendationController) *gin.Engine <span class="cov8" title="1">{
+        // Create a new Gin router
+        router := gin.Default()
+
+        config := cors.DefaultConfig()
+        config.AllowAllOrigins = true
+        router.Use(cors.New(config))
+
+        router.GET("/", controller.GetStatus)
+
+        router.GET("/api-docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+        router.GET("/health", controller.GetHealth)
+
+        router.PATCH("/recommended/rules/proximity",
+                validation.UserInfoHeaderValidator,
+                validation.AdminValidator,
+                proximityController.ModifyProximityRule)
+        router.GET("/recommended/rules/proximity",
+                validation.AdminValidator,
+                proximityController.GetProximityRule)
+
+        router.PATCH("/recommended/rules/interests",
+                validation.UserInfoHeaderValidator,
+                validation.AdminValidator,
+                interestsController.ModifyInterestsRule)
+        router.GET("/recommended/rules/interests",
+                validation.UserInfoHeaderValidator,
+                validation.AdminValidator,
+                interestsController.GetInterestsRule)
+
+        router.GET("/recommended",
+                validation.UserInfoHeaderValidator,
+                recommendationController.GetRecommendations)
+
+        return router
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package utilities
+
+import "time"
+
+func GetCurrentDate() string <span class="cov8" title="1">{
+        currentTime := time.Now()
+        formattedTime := currentTime.Format("2006-01-02 15:04:05")
+        return formattedTime
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package validation
+
+import (
+        "net/http"
+
+        "github.com/T2-1c2023/RecommendationService/app/model"
+        "github.com/gin-gonic/gin"
+)
+
+func AdminValidator(c *gin.Context) <span class="cov8" title="1">{
+        user, err := model.NewUserFromUserInfo(c.GetHeader("user_info"))
+        if err != nil </span><span class="cov0" title="0">{
+                c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+                return
+        }</span>
+        <span class="cov8" title="1">if !user.IsAdmin </span><span class="cov8" title="1">{
+                c.AbortWithStatusJSON(
+                        http.StatusUnauthorized,
+                        gin.H{"message": "Unauthorized"})
+                return
+        }</span>
+        <span class="cov8" title="1">c.Next()</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package validation
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+)
+
+func UserInfoHeaderValidator(c *gin.Context) <span class="cov8" title="1">{
+        headerValue := c.GetHeader("user_info")
+        if headerValue == "" </span><span class="cov0" title="0">{
+                c.AbortWithStatusJSON(
+                        http.StatusBadRequest,
+                        gin.H{"message": "Missing user info header"},
+                )
+        }</span>
+        <span class="cov8" title="1">c.Next()</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

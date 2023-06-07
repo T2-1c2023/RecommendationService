@@ -5,7 +5,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/T2-1c2023/RecommendationService/app/controller"
@@ -14,14 +13,14 @@ import (
 	"github.com/T2-1c2023/RecommendationService/app/services"
 	config "github.com/T2-1c2023/RecommendationService/config"
 	_ "github.com/T2-1c2023/RecommendationService/docs"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 	client, err := config.SetUpDB()
 	if err != nil {
 		panic(err)

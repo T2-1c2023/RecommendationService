@@ -20,7 +20,6 @@
 
 # Output of go coverage tool
 *.out
-coverage.html
 
 # IDE-specific files and directories
 .vscode/
