@@ -28,6 +28,7 @@ type ProximityRuleController struct {
 // @Failure									500
 // @Router       						/recommended/rules/proximity [patch]
 func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) {
+	controller.Logger.LogInfo("PATCH /recommended/rules/proximity")
 	var input model.ProximityRule
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -57,6 +58,7 @@ func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) {
 // @Failure									500
 // @Router       						/recommended/rules/proximity [get]
 func (controller *ProximityRuleController) GetProximityRule(c *gin.Context) {
+	controller.Logger.LogInfo("GET /recommended/rules/proximity")
 	rule, err := controller.Repo.GetProximityRule()
 	if err != nil {
 		controller.Logger.LogError(err)

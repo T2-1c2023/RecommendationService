@@ -33,6 +33,7 @@ type ChangeStatusInput struct {
 // @Success      200
 // @Router       / [get]
 func (controller *StatusController) GetStatus(c *gin.Context) {
+	controller.Logger.LogInfo("GET /")
 	controller.Logger.LogInfo("Returning /")
 	c.JSON(200, gin.H{
 		"message": "Notifications microservice running correctly",
@@ -45,6 +46,7 @@ func (controller *StatusController) GetStatus(c *gin.Context) {
 // @Success      200 {object} HealthResponse
 // @Router       /health [get]
 func (controller *StatusController) GetHealth(c *gin.Context) {
+	controller.Logger.LogInfo("GET /health")
 	response := HealthResponse{
 		CreationDate: creationDate,
 		LastResponse: utilities.GetCurrentDate(),
@@ -64,6 +66,7 @@ func (controller *StatusController) GetHealth(c *gin.Context) {
 // @Success      						200 {object} ChangeStatusInput
 // @Router       						/status [post]
 func (controller *StatusController) ChangeServiceStatus(c *gin.Context) {
+	controller.Logger.LogInfo("POST /status")
 	var input ChangeStatusInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -84,6 +87,7 @@ func (controller *StatusController) ChangeServiceStatus(c *gin.Context) {
 // @Success      						200 {object} ChangeStatusInput
 // @Router       						/status [get]
 func (controller *StatusController) GetServiceStatus(c *gin.Context) {
+	controller.Logger.LogInfo("GET /status")
 	response := ChangeStatusInput{
 		Blocked: controller.Blocked,
 	}
@@ -108,6 +112,7 @@ func (controller *StatusController) ValidateBlockedStatus(c *gin.Context) {
 // @Router       						/logs [get]
 func (controller *StatusController) GetLogs(c *gin.Context) {
 	content, err := ioutil.ReadFile("./log/app.log")
+	controller.Logger.LogInfo("GET /logs")
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to read log file")
 		return

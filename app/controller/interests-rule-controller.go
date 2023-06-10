@@ -28,6 +28,7 @@ type InterestsRuleController struct {
 // @Failure									500
 // @Router       						/recommended/rules/interests [patch]
 func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) {
+	controller.Logger.LogInfo("PATCH /recommended/rules/interests")
 	var input model.InterestsRule
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -57,6 +58,7 @@ func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) {
 // @Failure									500
 // @Router       						/recommended/rules/interests [get]
 func (controller *InterestsRuleController) GetInterestsRule(c *gin.Context) {
+	controller.Logger.LogInfo("GET /recommended/rules/interests")
 	rule, err := controller.Repo.GetInterestsRule()
 	if err != nil {
 		controller.Logger.LogError(err)

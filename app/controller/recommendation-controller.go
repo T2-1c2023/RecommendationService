@@ -117,6 +117,7 @@ func (controller *RecommendationController) getQueryParams(c *gin.Context) map[s
 // @Failure									503
 // @Router       						/recommended [get]
 func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
+	controller.Logger.LogInfo("GET /recommended")
 	proximityRule, err1 := controller.Repo.GetProximityRule()
 	interestsRule, err2 := controller.Repo.GetInterestsRule()
 	if err1 != nil || err2 != nil {
