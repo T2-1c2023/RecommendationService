@@ -1,17 +1,19 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
-	dateGenerator "github.com/T2-1c2023/RecommendationService/app/utilities"
+	"github.com/T2-1c2023/RecommendationService/app/utilities"
 	"github.com/gin-gonic/gin"
 )
 
-var creationDate string = dateGenerator.GetCurrentDate()
+var creationDate string = utilities.GetCurrentDate()
 
 type StatusController struct {
 	CreationDate string
 	Blocked      bool
+	Logger       utilities.ILogger
 }
 
 type HealthResponse struct {
@@ -24,20 +26,13 @@ type ChangeStatusInput struct {
 	Blocked bool `json:"blocked"`
 }
 
-func NewStatusController() StatusController {
-	service := StatusController{
-		CreationDate: dateGenerator.GetCurrentDate(),
-		Blocked:      false,
-	}
-	return service
-}
-
 // GetStatus     godoc
 // @Summary      Check the service's status.
 // @Description  Returns a 200 code and JSON with a message.
 // @Success      200
 // @Router       / [get]
-func (service *StatusController) GetStatus(c *gin.Context) {
+func (controller *StatusController) GetStatus(c *gin.Context) {
+	controller.Logger.LogInfo("Returning /")
 	c.JSON(200, gin.H{
 		"message": "Notifications microservice running correctly",
 	})
@@ -48,12 +43,13 @@ func (service *StatusController) GetStatus(c *gin.Context) {
 // @Description  Returns a 200 code and JSON with the date the service started running and a description.
 // @Success      200 {object} HealthResponse
 // @Router       /health [get]
-func (service *StatusController) GetHealth(c *gin.Context) {
+func (controller *StatusController) GetHealth(c *gin.Context) {
 	response := HealthResponse{
 		CreationDate: creationDate,
-		LastResponse: dateGenerator.GetCurrentDate(),
+		LastResponse: utilities.GetCurrentDate(),
 		Description:  "Recommendations microservice for FiuFit",
 	}
+	controller.Logger.LogInfo("Returning health response")
 	c.JSON(200, response)
 }
 
@@ -66,14 +62,16 @@ func (service *StatusController) GetHealth(c *gin.Context) {
 // @Param										rule body ChangeStatusInput true "Blocked status of the service"
 // @Success      						200 {object} ChangeStatusInput
 // @Router       						/status [post]
-func (service *StatusController) ChangeServiceStatus(c *gin.Context) {
+func (controller *StatusController) ChangeServiceStatus(c *gin.Context) {
 	var input ChangeStatusInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
+		controller.Logger.LogError(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 		return
 	}
-	service.Blocked = input.Blocked
+	controller.Blocked = input.Blocked
+	controller.Logger.LogDebug(fmt.Sprintf("Blocked status: %t\n", controller.Blocked))
 	c.JSON(http.StatusOK, input)
 }
 
@@ -84,15 +82,17 @@ func (service *StatusController) ChangeServiceStatus(c *gin.Context) {
 // @Produce									json
 // @Success      						200 {object} ChangeStatusInput
 // @Router       						/status [get]
-func (service *StatusController) GetServiceStatus(c *gin.Context) {
+func (controller *StatusController) GetServiceStatus(c *gin.Context) {
 	response := ChangeStatusInput{
-		Blocked: service.Blocked,
+		Blocked: controller.Blocked,
 	}
+	controller.Logger.LogDebug(fmt.Sprintf("Blocked status: %t\n", controller.Blocked))
 	c.JSON(http.StatusOK, response)
 }
 
-func (service *StatusController) ValidateBlockedStatus(c *gin.Context) {
-	if service.Blocked {
+func (controller *StatusController) ValidateBlockedStatus(c *gin.Context) {
+	if controller.Blocked {
+		controller.Logger.LogDebug("Blocked incoming request")
 		c.AbortWithStatusJSON(http.StatusLocked, gin.H{"message": "Service blocked"})
 		return
 	}

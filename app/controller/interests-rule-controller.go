@@ -5,11 +5,13 @@ import (
 
 	"github.com/T2-1c2023/RecommendationService/app/model"
 	"github.com/T2-1c2023/RecommendationService/app/persistence"
+	"github.com/T2-1c2023/RecommendationService/app/utilities"
 	"github.com/gin-gonic/gin"
 )
 
 type InterestsRuleController struct {
-	Repo persistence.IRulesRepository
+	Repo   persistence.IRulesRepository
+	Logger utilities.ILogger
 }
 
 // ModifyInterestsRule     	godoc
@@ -29,16 +31,19 @@ func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) {
 	var input model.InterestsRule
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
+		controller.Logger.LogInfo("Bad request, returning 400")
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	err = controller.Repo.UpdateInterestsRule(&input)
 	if err != nil {
+		controller.Logger.LogError(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
+	controller.Logger.LogInfo("Rule updated")
 	c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})
 }
 
@@ -54,8 +59,10 @@ func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) {
 func (controller *InterestsRuleController) GetInterestsRule(c *gin.Context) {
 	rule, err := controller.Repo.GetInterestsRule()
 	if err != nil {
+		controller.Logger.LogError(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
+	controller.Logger.LogInfo("Returning interests rule")
 	c.JSON(http.StatusOK, rule)
 }

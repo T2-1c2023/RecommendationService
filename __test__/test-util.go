@@ -7,6 +7,7 @@ import (
 	"github.com/T2-1c2023/RecommendationService/app/controller"
 	"github.com/T2-1c2023/RecommendationService/app/model"
 	"github.com/T2-1c2023/RecommendationService/app/routes"
+	"github.com/T2-1c2023/RecommendationService/app/utilities"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,18 +19,24 @@ func setUpRouter(interestsRuleEnabled bool,
 	)
 	trainingServiceMock := mock.NewTrainingServiceMock()
 	userServiceMock := mock.NewUserServiceMock()
+	logger := utilities.NewLogger("debug")
 	recommendationController := controller.RecommendationController{
 		Repo:            &rulesRepositoryMock,
 		UserService:     &userServiceMock,
 		TrainingService: &trainingServiceMock,
+		Logger:          &logger,
 	}
 	proximityRuleController := controller.ProximityRuleController{
-		Repo: &rulesRepositoryMock,
+		Repo:   &rulesRepositoryMock,
+		Logger: &logger,
 	}
 	interestsRuleController := controller.InterestsRuleController{
-		Repo: &rulesRepositoryMock,
+		Repo:   &rulesRepositoryMock,
+		Logger: &logger,
 	}
-	statusController := controller.NewStatusController()
+	statusController := controller.StatusController{
+		Logger: &logger,
+	}
 	router := routes.SetupRouter(&proximityRuleController,
 		&interestsRuleController, &recommendationController,
 		&statusController)
@@ -41,10 +48,12 @@ func setUpErrorRouter() (*gin.Engine, []model.Training) {
 	rulesRepositoryMock := mock.NewErrorRulesRepositoryMock()
 	trainingServiceMock := mock.NewTrainingServiceMock()
 	userServiceMock := mock.NewUserServiceMock()
+	logger := utilities.NewLogger("debug")
 	recommendationController := controller.RecommendationController{
 		Repo:            &rulesRepositoryMock,
 		UserService:     &userServiceMock,
 		TrainingService: &trainingServiceMock,
+		Logger:          &logger,
 	}
 	proximityRuleController := controller.ProximityRuleController{
 		Repo: &rulesRepositoryMock,
@@ -52,7 +61,9 @@ func setUpErrorRouter() (*gin.Engine, []model.Training) {
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
-	statusController := controller.NewStatusController()
+	statusController := controller.StatusController{
+		Logger: &logger,
+	}
 	router := routes.SetupRouter(&proximityRuleController,
 		&interestsRuleController, &recommendationController,
 		&statusController)

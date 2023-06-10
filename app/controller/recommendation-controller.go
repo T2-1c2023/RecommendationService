@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"github.com/T2-1c2023/RecommendationService/app/model"
 	"github.com/T2-1c2023/RecommendationService/app/persistence"
 	"github.com/T2-1c2023/RecommendationService/app/services"
+	"github.com/T2-1c2023/RecommendationService/app/utilities"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,6 +17,7 @@ type RecommendationController struct {
 	Repo            persistence.IRulesRepository
 	UserService     services.IUserService
 	TrainingService services.ITrainingService
+	Logger          utilities.ILogger
 }
 
 func (controller *RecommendationController) getTrainings(proximityRule model.ProximityRule,
@@ -29,6 +32,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
 				userInfo,
 			)
 		if err != nil {
+			controller.Logger.LogError(err)
 			return trainings, err
 		}
 		for _, trainer := range closeTrainers {
@@ -39,6 +43,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
 					queryParams,
 				)
 			if err != nil {
+				controller.Logger.LogError(err)
 				return trainings, err
 			}
 			trainings = append(trainings, someTrainings...)
@@ -47,6 +52,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
 		trainings, err =
 			controller.TrainingService.GetAllTrainings(userInfo, queryParams)
 		if err != nil {
+			controller.Logger.LogError(err)
 			return trainings, err
 		}
 	}
@@ -57,10 +63,12 @@ func (controller *RecommendationController) getInterests(userInfo string) ([]mod
 	var interests []model.Interest
 	userInfoObject, err := model.NewUserFromUserInfo(userInfo)
 	if err != nil {
+		controller.Logger.LogError(err)
 		return interests, err
 	}
 	user, err := controller.UserService.GetUserById(userInfoObject.Id, userInfo)
 	if err != nil {
+		controller.Logger.LogError(err)
 		return interests, err
 	}
 	return user.Interests, nil
@@ -112,24 +120,30 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
 	proximityRule, err1 := controller.Repo.GetProximityRule()
 	interestsRule, err2 := controller.Repo.GetInterestsRule()
 	if err1 != nil || err2 != nil {
+		controller.Logger.LogError(fmt.Errorf("database error"))
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{"message": "Database error"})
 	}
+	controller.Logger.LogDebug(fmt.Sprintf("Proximity rule enabled: %t", proximityRule.Enabled))
+	controller.Logger.LogDebug(fmt.Sprintf("Interests rule enabled: %t", interestsRule.Enabled))
 
 	if !proximityRule.Enabled && !interestsRule.Enabled {
+		controller.Logger.LogWarn("Neither rule is enabled, returning empty list")
 		trainings := []model.Training{}
 		c.JSON(http.StatusOK, trainings)
 		return
 	}
 
 	queryParams := controller.getQueryParams(c)
+	controller.Logger.LogDebug("User Info: " + c.GetHeader("user_info"))
 	trainings, err := controller.getTrainings(
 		proximityRule,
 		c.GetHeader("user_info"),
 		queryParams,
 	)
 	if err != nil {
+		controller.Logger.LogError(err)
 		c.AbortWithStatusJSON(
 			http.StatusServiceUnavailable,
 			gin.H{"message": err.Error()},
@@ -137,10 +151,14 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
 		return
 	}
 
+	controller.Logger.LogDebug(fmt.Sprintf("Amount of trainings retrieved: %d", len(trainings)))
+
 	if !interestsRule.Enabled {
 		if len(trainings) == 0 {
+			controller.Logger.LogInfo("Returning empty training list")
 			c.JSON(http.StatusOK, make([]model.Training, 0))
 		} else {
+			controller.Logger.LogInfo("Returning training list")
 			c.JSON(http.StatusOK, trainings)
 		}
 		return
@@ -148,6 +166,7 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
 
 	interests, err := controller.getInterests(c.GetHeader("user_info"))
 	if err != nil {
+		controller.Logger.LogError(err)
 		c.AbortWithStatusJSON(
 			http.StatusServiceUnavailable,
 			gin.H{"message": err.Error()},
@@ -156,9 +175,13 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) {
 	}
 
 	filteredTrainings := controller.filterTrainingsByInterests(trainings, interests)
+	controller.Logger.LogDebug(fmt.Sprintf("Amount of interests retrieved: %d", len(interests)))
+	controller.Logger.LogDebug(fmt.Sprintf("Amount of filtered trainings: %d", len(filteredTrainings)))
 	if len(filteredTrainings) == 0 {
+		controller.Logger.LogInfo("Returning empty training list")
 		c.JSON(http.StatusOK, make([]model.Training, 0))
 	} else {
+		controller.Logger.LogInfo("Returning training list")
 		c.JSON(http.StatusOK, filteredTrainings)
 	}
 }

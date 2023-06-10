@@ -11,20 +11,19 @@ import (
 	"github.com/T2-1c2023/RecommendationService/app/persistence"
 	routes "github.com/T2-1c2023/RecommendationService/app/routes"
 	"github.com/T2-1c2023/RecommendationService/app/services"
+	"github.com/T2-1c2023/RecommendationService/app/utilities"
 	config "github.com/T2-1c2023/RecommendationService/config"
 	_ "github.com/T2-1c2023/RecommendationService/docs"
-	// "github.com/joho/godotenv"
 )
 
 func main() {
-	// err := godotenv.Load(".env")
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file")
-	// }
+	logger := utilities.NewLogger(os.Getenv("LOG_LEVEL"))
+	logger.LogDebug("Microservice starting...")
 	client, err := config.SetUpDB()
 	if err != nil {
 		panic(err)
 	}
+	logger.LogDebug("Database ready")
 
 	repo := persistence.RulesRepository{
 		Collection: client.Database("recDB").Collection("rules"),
@@ -33,17 +32,22 @@ func main() {
 	trainingService := services.TrainingService{}
 
 	proximityController := controller.ProximityRuleController{
-		Repo: &repo,
+		Repo:   &repo,
+		Logger: &logger,
 	}
 	interestsController := controller.InterestsRuleController{
-		Repo: &repo,
+		Repo:   &repo,
+		Logger: &logger,
 	}
 	recommendationController := controller.RecommendationController{
 		Repo:            &repo,
 		UserService:     &userService,
 		TrainingService: &trainingService,
+		Logger:          &logger,
 	}
-	statusController := controller.NewStatusController()
+	statusController := controller.StatusController{
+		Logger: &logger,
+	}
 
 	router := routes.SetupRouter(
 		&proximityController,
@@ -56,5 +60,6 @@ func main() {
 		port = "3003" // Default port
 	}
 
+	logger.LogInfo("Aplicación de NodeJS ejecutándose en puerto " + port)
 	router.Run(":" + port)
 }
