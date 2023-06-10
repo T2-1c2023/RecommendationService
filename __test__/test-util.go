@@ -2,6 +2,7 @@ package __test__
 
 import (
 	"encoding/json"
+	"os"
 
 	mock "github.com/T2-1c2023/RecommendationService/__mock__"
 	"github.com/T2-1c2023/RecommendationService/app/controller"
@@ -19,7 +20,8 @@ func setUpRouter(interestsRuleEnabled bool,
 	)
 	trainingServiceMock := mock.NewTrainingServiceMock()
 	userServiceMock := mock.NewUserServiceMock()
-	logger := utilities.NewLogger("debug")
+	logFile, _ := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logger := utilities.NewLogger("debug", logFile)
 	recommendationController := controller.RecommendationController{
 		Repo:            &rulesRepositoryMock,
 		UserService:     &userServiceMock,
@@ -48,7 +50,8 @@ func setUpErrorRouter() (*gin.Engine, []model.Training) {
 	rulesRepositoryMock := mock.NewErrorRulesRepositoryMock()
 	trainingServiceMock := mock.NewTrainingServiceMock()
 	userServiceMock := mock.NewUserServiceMock()
-	logger := utilities.NewLogger("debug")
+	logFile, _ := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logger := utilities.NewLogger("debug", logFile)
 	recommendationController := controller.RecommendationController{
 		Repo:            &rulesRepositoryMock,
 		UserService:     &userServiceMock,

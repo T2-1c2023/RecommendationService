@@ -41,6 +41,20 @@ const docTemplate = `{
                 }
             }
         },
+        "/logs": {
+            "get": {
+                "description": "Get the service's logs.",
+                "produces": [
+                    "text/plain"
+                ],
+                "summary": "Get the service's logs.",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/recommended": {
             "get": {
                 "description": "Get recommended trainings according to current ruleset.",
@@ -99,6 +113,9 @@ const docTemplate = `{
                                 "$ref": "#/definitions/model.Training"
                             }
                         }
+                    },
+                    "423": {
+                        "description": "Locked"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -177,6 +194,9 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request"
                     },
+                    "423": {
+                        "description": "Locked"
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -250,6 +270,9 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "423": {
+                        "description": "Locked"
                     },
                     "500": {
                         "description": "Internal Server Error"

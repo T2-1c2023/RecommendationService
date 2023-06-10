@@ -17,8 +17,14 @@ import (
 )
 
 func main() {
-	logger := utilities.NewLogger(os.Getenv("LOG_LEVEL"))
+	logFile, err := os.OpenFile("./log/app.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	if err != nil {
+		panic(err)
+	}
+	logger := utilities.NewLogger(os.Getenv("LOG_LEVEL"), logFile)
+	defer logger.CloseFile()
 	logger.LogDebug("Microservice starting...")
+
 	client, err := config.SetUpDB()
 	if err != nil {
 		panic(err)
@@ -60,6 +66,7 @@ func main() {
 		port = "3003" // Default port
 	}
 
-	logger.LogInfo("Aplicación de NodeJS ejecutándose en puerto " + port)
+	logger.LogInfo("App started on " + utilities.GetCurrentDate())
+	logger.LogInfo("Recommendation microservice running at port " + port)
 	router.Run(":" + port)
 }

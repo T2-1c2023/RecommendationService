@@ -69,6 +69,15 @@ paths:
           schema:
             $ref: '#/definitions/controller.HealthResponse'
       summary: Get the service's health status.
+  /logs:
+    get:
+      description: Get the service's logs.
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      summary: Get the service's logs.
   /recommended:
     get:
       description: Get recommended trainings according to current ruleset.
@@ -107,6 +116,8 @@ paths:
             items:
               $ref: '#/definitions/model.Training'
             type: array
+        "423":
+          description: Locked
         "500":
           description: Internal Server Error
         "503":
@@ -158,6 +169,8 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "423":
+          description: Locked
         "500":
           description: Internal Server Error
       summary: Update the interests rule' status for recommended trainings.
@@ -207,6 +220,8 @@ paths:
           description: Created
         "400":
           description: Bad Request
+        "423":
+          description: Locked
         "500":
           description: Internal Server Error
       summary: Update the maximum radius for recommended trainings.

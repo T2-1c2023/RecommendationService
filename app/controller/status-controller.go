@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/T2-1c2023/RecommendationService/app/utilities"
@@ -97,4 +98,20 @@ func (controller *StatusController) ValidateBlockedStatus(c *gin.Context) {
 		return
 	}
 	c.Next()
+}
+
+// GetLogs						     	godoc
+// @Summary      						Get the service's logs.
+// @Description  						Get the service's logs.
+// @Produce									text/plain
+// @Success      						200
+// @Router       						/logs [get]
+func (controller *StatusController) GetLogs(c *gin.Context) {
+	content, err := ioutil.ReadFile("./log/app.log")
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to read log file")
+		return
+	}
+	c.Header("Content-Type", "text/plain")
+	c.String(http.StatusOK, string(content))
 }

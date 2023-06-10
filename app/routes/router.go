@@ -35,6 +35,8 @@ func SetupRouter(proximityController *controller.ProximityRuleController,
 
 	router.GET("/api-docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	router.GET("/logs", statusController.GetLogs)
+
 	router.Use(statusController.ValidateBlockedStatus)
 
 	router.PATCH("/recommended/rules/proximity",
