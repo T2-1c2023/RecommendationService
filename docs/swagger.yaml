@@ -1,4 +1,9 @@
 definitions:
+  controller.ChangeStatusInput:
+    properties:
+      blocked:
+        type: boolean
+    type: object
   controller.HealthResponse:
     properties:
       creation_date:
@@ -207,4 +212,45 @@ paths:
       summary: Update the maximum radius for recommended trainings.
       tags:
       - Proximity Rule
+  /status:
+    get:
+      description: Get the status of the service.
+      parameters:
+      - description: Decoded payload of the admin token
+        in: header
+        name: user_info
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ChangeStatusInput'
+      summary: Get the service's blocked status.
+    post:
+      consumes:
+      - application/json
+      description: Changes the status of the service.
+      parameters:
+      - description: Decoded payload of the admin token
+        in: header
+        name: user_info
+        required: true
+        type: string
+      - description: Blocked status of the service
+        in: body
+        name: rule
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ChangeStatusInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ChangeStatusInput'
+      summary: Change the service's blocked status.
 swagger: "2.0"

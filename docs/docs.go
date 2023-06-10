@@ -256,9 +256,79 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/status": {
+            "get": {
+                "description": "Get the status of the service.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the service's blocked status.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Decoded payload of the admin token",
+                        "name": "user_info",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.ChangeStatusInput"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Changes the status of the service.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Change the service's blocked status.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Decoded payload of the admin token",
+                        "name": "user_info",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Blocked status of the service",
+                        "name": "rule",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.ChangeStatusInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.ChangeStatusInput"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "controller.ChangeStatusInput": {
+            "type": "object",
+            "properties": {
+                "blocked": {
+                    "type": "boolean"
+                }
+            }
+        },
         "controller.HealthResponse": {
             "type": "object",
             "properties": {

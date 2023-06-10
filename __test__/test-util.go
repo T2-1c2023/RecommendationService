@@ -29,8 +29,10 @@ func setUpRouter(interestsRuleEnabled bool,
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
+	statusController := controller.NewStatusController()
 	router := routes.SetupRouter(&proximityRuleController,
-		&interestsRuleController, &recommendationController)
+		&interestsRuleController, &recommendationController,
+		&statusController)
 
 	return router, trainingServiceMock.Trainings
 }
@@ -50,8 +52,10 @@ func setUpErrorRouter() (*gin.Engine, []model.Training) {
 	interestsRuleController := controller.InterestsRuleController{
 		Repo: &rulesRepositoryMock,
 	}
+	statusController := controller.NewStatusController()
 	router := routes.SetupRouter(&proximityRuleController,
-		&interestsRuleController, &recommendationController)
+		&interestsRuleController, &recommendationController,
+		&statusController)
 
 	return router, trainingServiceMock.Trainings
 }

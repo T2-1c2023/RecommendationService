@@ -22,6 +22,7 @@ type ProximityRuleController struct {
 // @Param										rule body model.ProximityRule true "Proximity rule changes"
 // @Success      						201
 // @Failure									400
+// @Failure									423
 // @Failure									500
 // @Router       						/recommended/rules/proximity [patch]
 func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) {

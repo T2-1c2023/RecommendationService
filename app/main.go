@@ -43,11 +43,13 @@ func main() {
 		UserService:     &userService,
 		TrainingService: &trainingService,
 	}
+	statusController := controller.NewStatusController()
 
 	router := routes.SetupRouter(
 		&proximityController,
 		&interestsController,
-		&recommendationController)
+		&recommendationController,
+		&statusController)
 
 	port := os.Getenv("PORT")
 	if port == "" {

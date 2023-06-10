@@ -11,7 +11,8 @@ import (
 
 func SetupRouter(proximityController *controller.ProximityRuleController,
 	interestsController *controller.InterestsRuleController,
-	recommendationController *controller.RecommendationController) *gin.Engine {
+	recommendationController *controller.RecommendationController,
+	statusController *controller.StatusController) *gin.Engine {
 	// Create a new Gin router
 	router := gin.Default()
 
@@ -19,11 +20,22 @@ func SetupRouter(proximityController *controller.ProximityRuleController,
 	config.AllowAllOrigins = true
 	router.Use(cors.New(config))
 
-	router.GET("/", controller.GetStatus)
+	router.GET("/", statusController.GetStatus)
+
+	router.GET("/health", statusController.GetHealth)
+
+	router.GET("/status",
+		validation.UserInfoHeaderValidator,
+		validation.AdminValidator,
+		statusController.GetServiceStatus)
+	router.POST("/status",
+		validation.UserInfoHeaderValidator,
+		validation.AdminValidator,
+		statusController.ChangeServiceStatus)
 
 	router.GET("/api-docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	router.GET("/health", controller.GetHealth)
+	router.Use(statusController.ValidateBlockedStatus)
 
 	router.PATCH("/recommended/rules/proximity",
 		validation.UserInfoHeaderValidator,

@@ -1,5 +1,5 @@
 # RecomendationService
-Walking Skeleton para el microservicio de recomendaciones desarrollado con `Golang` y `Gin`.
+Microservicio de recomendaciones desarrollado con `Golang` y `Gin`.
 Incluye `docker`, `docker compose`, tests unitarios con `testify`, base de datos en `MongoDB`, linter, pipeline CI-CD con `Github Actions`. 
 
 

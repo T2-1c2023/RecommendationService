@@ -22,6 +22,7 @@ type InterestsRuleController struct {
 // @Param										rule body model.InterestsRule true "Interests rule changes"
 // @Success      						201
 // @Failure									400
+// @Failure									423
 // @Failure									500
 // @Router       						/recommended/rules/interests [patch]
 func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) {

@@ -104,6 +104,7 @@ func (controller *RecommendationController) getQueryParams(c *gin.Context) map[s
 // @Param 									blocked query bool false "Whether the training is blocked"
 // @Produce									json
 // @Success      						200 {array} model.Training
+// @Failure									423
 // @Failure									500
 // @Failure									503
 // @Router       						/recommended [get]
