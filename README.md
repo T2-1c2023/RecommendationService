@@ -100,6 +100,8 @@ La documentación se puede ver al ejecutar el microservicio, y llamar al endpoin
 
 Para generar nueva documentación, deben agregarse las debidas anotaciones a la función del controller adecuado, y luego correr `sh generate-swagger-files.sh`.
 
+El reporte de coverage del último commit se puede ver en: https://t2-1c2023.github.io/RecommendationService/ 
+
 # Convenciones para trabajar/pushear
 
 - Antes de pushear, asegurarse de que pase el linter y las pruebas locales con el siguiente comando
