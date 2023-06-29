@@ -22,8 +22,6 @@ func SetupRouter(proximityController *controller.ProximityRuleController,
 
 	router.GET("/", statusController.GetStatus)
 
-	router.GET("/health", statusController.GetHealth)
-
 	router.GET("/status",
 		validation.UserInfoHeaderValidator,
 		validation.AdminValidator,
@@ -38,6 +36,8 @@ func SetupRouter(proximityController *controller.ProximityRuleController,
 	router.GET("/logs", statusController.GetLogs)
 
 	router.Use(statusController.ValidateBlockedStatus)
+
+	router.GET("/health", statusController.GetHealth)
 
 	router.PATCH("/recommended/rules/proximity",
 		validation.UserInfoHeaderValidator,

@@ -55,13 +55,13 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/T2-1c2023/RecommendationService/app/controller/interests-rule-controller.go (86.7%)</option>
+				<option value="file0">github.com/T2-1c2023/RecommendationService/app/controller/interests-rule-controller.go (59.1%)</option>
 				
-				<option value="file1">github.com/T2-1c2023/RecommendationService/app/controller/proximity-rule-controller.go (86.7%)</option>
+				<option value="file1">github.com/T2-1c2023/RecommendationService/app/controller/proximity-rule-controller.go (59.1%)</option>
 				
-				<option value="file2">github.com/T2-1c2023/RecommendationService/app/controller/recommendation-controller.go (79.7%)</option>
+				<option value="file2">github.com/T2-1c2023/RecommendationService/app/controller/recommendation-controller.go (72.6%)</option>
 				
-				<option value="file3">github.com/T2-1c2023/RecommendationService/app/controller/status-controller.go (100.0%)</option>
+				<option value="file3">github.com/T2-1c2023/RecommendationService/app/controller/status-controller.go (6.1%)</option>
 				
 				<option value="file4">github.com/T2-1c2023/RecommendationService/app/model/user.go (80.0%)</option>
 				
@@ -69,9 +69,11 @@
 				
 				<option value="file6">github.com/T2-1c2023/RecommendationService/app/utilities/date-generator.go (100.0%)</option>
 				
-				<option value="file7">github.com/T2-1c2023/RecommendationService/app/validation/admin-validator.go (75.0%)</option>
+				<option value="file7">github.com/T2-1c2023/RecommendationService/app/utilities/logger.go (68.8%)</option>
 				
-				<option value="file8">github.com/T2-1c2023/RecommendationService/app/validation/user-info-header-validator.go (75.0%)</option>
+				<option value="file8">github.com/T2-1c2023/RecommendationService/app/validation/admin-validator.go (75.0%)</option>
+				
+				<option value="file9">github.com/T2-1c2023/RecommendationService/app/validation/user-info-header-validator.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -92,11 +94,13 @@ import (
 
         "github.com/T2-1c2023/RecommendationService/app/model"
         "github.com/T2-1c2023/RecommendationService/app/persistence"
+        "github.com/T2-1c2023/RecommendationService/app/utilities"
         "github.com/gin-gonic/gin"
 )
 
 type InterestsRuleController struct {
-        Repo persistence.IRulesRepository
+        Repo   persistence.IRulesRepository
+        Logger utilities.ILogger
 }
 
 // ModifyInterestsRule             godoc
@@ -109,23 +113,28 @@ type InterestsRuleController struct {
 // @Param                                                                                rule body model.InterestsRule true "Interests rule changes"
 // @Success                                                      201
 // @Failure                                                                        400
+// @Failure                                                                        423
 // @Failure                                                                        500
 // @Router                                                       /recommended/rules/interests [patch]
 func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) <span class="cov8" title="1">{
+        controller.Logger.LogInfo("PATCH /recommended/rules/interests")
         var input model.InterestsRule
         err := c.ShouldBindJSON(&amp;input)
         if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogInfo("Bad request, returning 400")
                 c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
                 return
         }</span>
 
         <span class="cov8" title="1">err = controller.Repo.UpdateInterestsRule(&amp;input)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
                 return
         }</span>
 
-        <span class="cov8" title="1">c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})</span>
+        <span class="cov8" title="1">controller.Logger.LogInfo("Rule updated")
+        c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})</span>
 }
 
 // GetInterestsRule                     godoc
@@ -138,12 +147,15 @@ func (controller *InterestsRuleController) ModifyInterestsRule(c *gin.Context) <
 // @Failure                                                                        500
 // @Router                                                       /recommended/rules/interests [get]
 func (controller *InterestsRuleController) GetInterestsRule(c *gin.Context) <span class="cov8" title="1">{
+        controller.Logger.LogInfo("GET /recommended/rules/interests")
         rule, err := controller.Repo.GetInterestsRule()
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
                 return
         }</span>
-        <span class="cov8" title="1">c.JSON(http.StatusOK, rule)</span>
+        <span class="cov8" title="1">controller.Logger.LogInfo("Returning interests rule")
+        c.JSON(http.StatusOK, rule)</span>
 }
 </pre>
 		
@@ -154,11 +166,13 @@ import (
 
         "github.com/T2-1c2023/RecommendationService/app/model"
         "github.com/T2-1c2023/RecommendationService/app/persistence"
+        "github.com/T2-1c2023/RecommendationService/app/utilities"
         "github.com/gin-gonic/gin"
 )
 
 type ProximityRuleController struct {
-        Repo persistence.IRulesRepository
+        Repo   persistence.IRulesRepository
+        Logger utilities.ILogger
 }
 
 // ModifyProximityRule             godoc
@@ -171,23 +185,28 @@ type ProximityRuleController struct {
 // @Param                                                                                rule body model.ProximityRule true "Proximity rule changes"
 // @Success                                                      201
 // @Failure                                                                        400
+// @Failure                                                                        423
 // @Failure                                                                        500
 // @Router                                                       /recommended/rules/proximity [patch]
 func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) <span class="cov8" title="1">{
+        controller.Logger.LogInfo("PATCH /recommended/rules/proximity")
         var input model.ProximityRule
         err := c.ShouldBindJSON(&amp;input)
         if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogInfo("Bad request, returning 400")
                 c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
                 return
         }</span>
 
         <span class="cov8" title="1">err = controller.Repo.UpdateProximityRule(&amp;input)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
                 return
         }</span>
 
-        <span class="cov8" title="1">c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})</span>
+        <span class="cov8" title="1">controller.Logger.LogInfo("Rule updated")
+        c.JSON(http.StatusCreated, gin.H{"message": "Rule updated"})</span>
 }
 
 // GetProximityRule                     godoc
@@ -200,18 +219,22 @@ func (controller *ProximityRuleController) ModifyProximityRule(c *gin.Context) <
 // @Failure                                                                        500
 // @Router                                                       /recommended/rules/proximity [get]
 func (controller *ProximityRuleController) GetProximityRule(c *gin.Context) <span class="cov8" title="1">{
+        controller.Logger.LogInfo("GET /recommended/rules/proximity")
         rule, err := controller.Repo.GetProximityRule()
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
                 return
         }</span>
-        <span class="cov8" title="1">c.JSON(http.StatusOK, rule)</span>
+        <span class="cov8" title="1">controller.Logger.LogInfo("Returning proximity rule")
+        c.JSON(http.StatusOK, rule)</span>
 }
 </pre>
 		
 		<pre class="file" id="file2" style="display: none">package controller
 
 import (
+        "fmt"
         "net/http"
         "os"
         "strings"
@@ -219,6 +242,7 @@ import (
         "github.com/T2-1c2023/RecommendationService/app/model"
         "github.com/T2-1c2023/RecommendationService/app/persistence"
         "github.com/T2-1c2023/RecommendationService/app/services"
+        "github.com/T2-1c2023/RecommendationService/app/utilities"
         "github.com/gin-gonic/gin"
 )
 
@@ -226,6 +250,7 @@ type RecommendationController struct {
         Repo            persistence.IRulesRepository
         UserService     services.IUserService
         TrainingService services.ITrainingService
+        Logger          utilities.ILogger
 }
 
 func (controller *RecommendationController) getTrainings(proximityRule model.ProximityRule,
@@ -240,6 +265,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
                                 userInfo,
                         )
                 if err != nil </span><span class="cov0" title="0">{
+                        controller.Logger.LogError(err)
                         return trainings, err
                 }</span>
                 <span class="cov8" title="1">for _, trainer := range closeTrainers </span><span class="cov8" title="1">{
@@ -250,6 +276,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
                                         queryParams,
                                 )
                         if err != nil </span><span class="cov0" title="0">{
+                                controller.Logger.LogError(err)
                                 return trainings, err
                         }</span>
                         <span class="cov8" title="1">trainings = append(trainings, someTrainings...)</span>
@@ -258,6 +285,7 @@ func (controller *RecommendationController) getTrainings(proximityRule model.Pro
                 trainings, err =
                         controller.TrainingService.GetAllTrainings(userInfo, queryParams)
                 if err != nil </span><span class="cov0" title="0">{
+                        controller.Logger.LogError(err)
                         return trainings, err
                 }</span>
         }
@@ -268,10 +296,12 @@ func (controller *RecommendationController) getInterests(userInfo string) ([]mod
         var interests []model.Interest
         userInfoObject, err := model.NewUserFromUserInfo(userInfo)
         if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 return interests, err
         }</span>
         <span class="cov8" title="1">user, err := controller.UserService.GetUserById(userInfoObject.Id, userInfo)
         if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 return interests, err
         }</span>
         <span class="cov8" title="1">return user.Interests, nil</span>
@@ -315,31 +345,39 @@ func (controller *RecommendationController) getQueryParams(c *gin.Context) map[s
 // @Param                                                                         blocked query bool false "Whether the training is blocked"
 // @Produce                                                                        json
 // @Success                                                      200 {array} model.Training
+// @Failure                                                                        423
 // @Failure                                                                        500
 // @Failure                                                                        503
 // @Router                                                       /recommended [get]
 func (controller *RecommendationController) GetRecommendations(c *gin.Context) <span class="cov8" title="1">{
+        controller.Logger.LogInfo("GET /recommended")
         proximityRule, err1 := controller.Repo.GetProximityRule()
         interestsRule, err2 := controller.Repo.GetInterestsRule()
         if err1 != nil || err2 != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(fmt.Errorf("database error"))
                 c.AbortWithStatusJSON(
                         http.StatusInternalServerError,
                         gin.H{"message": "Database error"})
         }</span>
+        <span class="cov8" title="1">controller.Logger.LogDebug(fmt.Sprintf("Proximity rule enabled: %t", proximityRule.Enabled))
+        controller.Logger.LogDebug(fmt.Sprintf("Interests rule enabled: %t", interestsRule.Enabled))
 
-        <span class="cov8" title="1">if !proximityRule.Enabled &amp;&amp; !interestsRule.Enabled </span><span class="cov8" title="1">{
+        if !proximityRule.Enabled &amp;&amp; !interestsRule.Enabled </span><span class="cov8" title="1">{
+                controller.Logger.LogWarn("Neither rule is enabled, returning empty list")
                 trainings := []model.Training{}
                 c.JSON(http.StatusOK, trainings)
                 return
         }</span>
 
         <span class="cov8" title="1">queryParams := controller.getQueryParams(c)
+        controller.Logger.LogDebug("User Info: " + c.GetHeader("user_info"))
         trainings, err := controller.getTrainings(
                 proximityRule,
                 c.GetHeader("user_info"),
                 queryParams,
         )
         if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 c.AbortWithStatusJSON(
                         http.StatusServiceUnavailable,
                         gin.H{"message": err.Error()},
@@ -347,10 +385,14 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) <
                 return
         }</span>
 
-        <span class="cov8" title="1">if !interestsRule.Enabled </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">controller.Logger.LogDebug(fmt.Sprintf("Amount of trainings retrieved: %d", len(trainings)))
+
+        if !interestsRule.Enabled </span><span class="cov8" title="1">{
                 if len(trainings) == 0 </span><span class="cov0" title="0">{
+                        controller.Logger.LogInfo("Returning empty training list")
                         c.JSON(http.StatusOK, make([]model.Training, 0))
                 }</span> else<span class="cov8" title="1"> {
+                        controller.Logger.LogInfo("Returning training list")
                         c.JSON(http.StatusOK, trainings)
                 }</span>
                 <span class="cov8" title="1">return</span>
@@ -358,6 +400,7 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) <
 
         <span class="cov8" title="1">interests, err := controller.getInterests(c.GetHeader("user_info"))
         if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
                 c.AbortWithStatusJSON(
                         http.StatusServiceUnavailable,
                         gin.H{"message": err.Error()},
@@ -366,9 +409,13 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) <
         }</span>
 
         <span class="cov8" title="1">filteredTrainings := controller.filterTrainingsByInterests(trainings, interests)
+        controller.Logger.LogDebug(fmt.Sprintf("Amount of interests retrieved: %d", len(interests)))
+        controller.Logger.LogDebug(fmt.Sprintf("Amount of filtered trainings: %d", len(filteredTrainings)))
         if len(filteredTrainings) == 0 </span><span class="cov0" title="0">{
+                controller.Logger.LogInfo("Returning empty training list")
                 c.JSON(http.StatusOK, make([]model.Training, 0))
         }</span> else<span class="cov8" title="1"> {
+                controller.Logger.LogInfo("Returning training list")
                 c.JSON(http.StatusOK, filteredTrainings)
         }</span>
 }
@@ -377,22 +424,21 @@ func (controller *RecommendationController) GetRecommendations(c *gin.Context) <
 		<pre class="file" id="file3" style="display: none">package controller
 
 import (
-        dateGenerator "github.com/T2-1c2023/RecommendationService/app/utilities"
+        "fmt"
+        "io/ioutil"
+        "net/http"
+
+        "github.com/T2-1c2023/RecommendationService/app/utilities"
         "github.com/gin-gonic/gin"
 )
 
-var creationDate string = dateGenerator.GetCurrentDate()
+var creationDate string = utilities.GetCurrentDate()
 
-// GetStatus     godoc
-// @Summary      Check the service's status.
-// @Description  Returns a 200 code and JSON with a message.
-// @Success      200
-// @Router       / [get]
-func GetStatus(c *gin.Context) <span class="cov8" title="1">{
-        c.JSON(200, gin.H{
-                "message": "Notifications microservice running correctly",
-        })
-}</span>
+type StatusController struct {
+        CreationDate string
+        Blocked      bool
+        Logger       utilities.ILogger
+}
 
 type HealthResponse struct {
         CreationDate string `json:"creation_date"`
@@ -400,19 +446,103 @@ type HealthResponse struct {
         Description  string `json:"description"`
 }
 
+type ChangeStatusInput struct {
+        Blocked bool `json:"blocked"`
+}
+
+// GetStatus     godoc
+// @Summary      Check the service's status.
+// @Description  Returns a 200 code and JSON with a message.
+// @Success      200
+// @Router       / [get]
+func (controller *StatusController) GetStatus(c *gin.Context) <span class="cov0" title="0">{
+        controller.Logger.LogInfo("GET /")
+        controller.Logger.LogInfo("Returning /")
+        c.JSON(200, gin.H{
+                "message": "Notifications microservice running correctly",
+        })
+}</span>
+
 // GetHealth     godoc
 // @Summary      Get the service's health status.
 // @Description  Returns a 200 code and JSON with the date the service started running and a description.
 // @Success      200 {object} HealthResponse
 // @Router       /health [get]
-func GetHealth(c *gin.Context) <span class="cov8" title="1">{
+func (controller *StatusController) GetHealth(c *gin.Context) <span class="cov0" title="0">{
+        controller.Logger.LogInfo("GET /health")
         response := HealthResponse{
                 CreationDate: creationDate,
-                LastResponse: dateGenerator.GetCurrentDate(),
+                LastResponse: utilities.GetCurrentDate(),
                 Description:  "Recommendations microservice for FiuFit",
         }
+        controller.Logger.LogInfo("Returning health response")
         c.JSON(200, response)
 }</span>
+
+// ChangeServiceStatus             godoc
+// @Summary                                                      Change the service's blocked status.
+// @Description                                                  Changes the status of the service.
+// @Param                                                                                user_info header string true "Decoded payload of the admin token"
+// @Accept                                                                        json
+// @Produce                                                                        json
+// @Param                                                                                rule body ChangeStatusInput true "Blocked status of the service"
+// @Success                                                      200 {object} ChangeStatusInput
+// @Router                                                       /status [post]
+func (controller *StatusController) ChangeServiceStatus(c *gin.Context) <span class="cov0" title="0">{
+        controller.Logger.LogInfo("POST /status")
+        var input ChangeStatusInput
+        err := c.ShouldBindJSON(&amp;input)
+        if err != nil </span><span class="cov0" title="0">{
+                controller.Logger.LogError(err)
+                c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+                return
+        }</span>
+        <span class="cov0" title="0">controller.Blocked = input.Blocked
+        controller.Logger.LogDebug(fmt.Sprintf("Blocked status: %t\n", controller.Blocked))
+        c.JSON(http.StatusOK, input)</span>
+}
+
+// GetServiceStatus                             godoc
+// @Summary                                                      Get the service's blocked status.
+// @Description                                                  Get the status of the service.
+// @Param                                                                                user_info header string true "Decoded payload of the admin token"
+// @Produce                                                                        json
+// @Success                                                      200 {object} ChangeStatusInput
+// @Router                                                       /status [get]
+func (controller *StatusController) GetServiceStatus(c *gin.Context) <span class="cov0" title="0">{
+        controller.Logger.LogInfo("GET /status")
+        response := ChangeStatusInput{
+                Blocked: controller.Blocked,
+        }
+        controller.Logger.LogDebug(fmt.Sprintf("Blocked status: %t\n", controller.Blocked))
+        c.JSON(http.StatusOK, response)
+}</span>
+
+func (controller *StatusController) ValidateBlockedStatus(c *gin.Context) <span class="cov8" title="1">{
+        if controller.Blocked </span><span class="cov0" title="0">{
+                controller.Logger.LogDebug("Blocked incoming request")
+                c.AbortWithStatusJSON(http.StatusLocked, gin.H{"message": "Service blocked"})
+                return
+        }</span>
+        <span class="cov8" title="1">c.Next()</span>
+}
+
+// GetLogs                                                             godoc
+// @Summary                                                      Get the service's logs.
+// @Description                                                  Get the service's logs.
+// @Produce                                                                        text/plain
+// @Success                                                      200
+// @Router                                                       /logs [get]
+func (controller *StatusController) GetLogs(c *gin.Context) <span class="cov0" title="0">{
+        content, err := ioutil.ReadFile("./log/app.log")
+        controller.Logger.LogInfo("GET /logs")
+        if err != nil </span><span class="cov0" title="0">{
+                c.String(http.StatusInternalServerError, "Failed to read log file")
+                return
+        }</span>
+        <span class="cov0" title="0">c.Header("Content-Type", "text/plain")
+        c.String(http.StatusOK, string(content))</span>
+}
 </pre>
 		
 		<pre class="file" id="file4" style="display: none">package model
@@ -463,7 +593,8 @@ import (
 
 func SetupRouter(proximityController *controller.ProximityRuleController,
         interestsController *controller.InterestsRuleController,
-        recommendationController *controller.RecommendationController) *gin.Engine <span class="cov8" title="1">{
+        recommendationController *controller.RecommendationController,
+        statusController *controller.StatusController) *gin.Engine <span class="cov8" title="1">{
         // Create a new Gin router
         router := gin.Default()
 
@@ -471,11 +602,24 @@ func SetupRouter(proximityController *controller.ProximityRuleController,
         config.AllowAllOrigins = true
         router.Use(cors.New(config))
 
-        router.GET("/", controller.GetStatus)
+        router.GET("/", statusController.GetStatus)
+
+        router.GET("/health", statusController.GetHealth)
+
+        router.GET("/status",
+                validation.UserInfoHeaderValidator,
+                validation.AdminValidator,
+                statusController.GetServiceStatus)
+        router.POST("/status",
+                validation.UserInfoHeaderValidator,
+                validation.AdminValidator,
+                statusController.ChangeServiceStatus)
 
         router.GET("/api-docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-        router.GET("/health", controller.GetHealth)
+        router.GET("/logs", statusController.GetLogs)
+
+        router.Use(statusController.ValidateBlockedStatus)
 
         router.PATCH("/recommended/rules/proximity",
                 validation.UserInfoHeaderValidator,
@@ -513,7 +657,92 @@ func GetCurrentDate() string <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file7" style="display: none">package validation
+		<pre class="file" id="file7" style="display: none">package utilities
+
+import (
+        "os"
+
+        "github.com/fatih/color"
+)
+
+type LogLevel string
+
+const (
+        Debug LogLevel = "debug"
+        Info  LogLevel = "info"
+        Warn  LogLevel = "warn"
+        Error LogLevel = "error"
+)
+
+type ILogger interface {
+        LogDebug(message string)
+        LogInfo(message string)
+        LogWarn(message string)
+        LogError(err error)
+}
+
+type Logger struct {
+        Level      LogLevel
+        LogFile    *os.File
+        DebugColor *color.Color
+        InfoColor  *color.Color
+        WarnColor  *color.Color
+        ErrorColor *color.Color
+}
+
+func NewLogger(logLevel string, logFile *os.File) Logger <span class="cov8" title="1">{
+        logger := Logger{
+                Level:      LogLevel(logLevel),
+                LogFile:    logFile,
+                DebugColor: color.New(color.BgCyan),
+                InfoColor:  color.New(color.BgWhite),
+                WarnColor:  color.New(color.BgYellow),
+                ErrorColor: color.New(color.BgRed),
+        }
+        switch logger.Level </span>{
+        case Debug, Info, Warn, Error:<span class="cov8" title="1">
+                return logger</span>
+        default:<span class="cov0" title="0">
+                logger.Level = Debug
+                return logger</span>
+        }
+}
+
+func (logger *Logger) CloseFile() <span class="cov0" title="0">{
+        logger.LogFile.Close()
+}</span>
+
+func (logger *Logger) log(message string, logColor *color.Color) <span class="cov8" title="1">{
+        logColor.Fprintln(logger.LogFile, message)
+        logColor.Println(message)
+}</span>
+
+func (logger *Logger) LogDebug(message string) <span class="cov8" title="1">{
+        if logger.Level == Debug </span><span class="cov8" title="1">{
+                logger.log("[DEBUG]\t\t"+message, logger.DebugColor)
+        }</span>
+}
+
+func (logger *Logger) LogInfo(message string) <span class="cov8" title="1">{
+        if logger.Level == Info || logger.Level == Debug </span><span class="cov8" title="1">{
+                logger.log("[INFO]\t\t"+message, logger.InfoColor)
+        }</span>
+}
+
+func (logger *Logger) LogWarn(message string) <span class="cov8" title="1">{
+        if logger.Level != Error </span><span class="cov8" title="1">{
+                logger.log("[WARN]\t\t"+message, logger.WarnColor)
+        }</span>
+}
+
+func (logger *Logger) LogError(err error) <span class="cov0" title="0">{
+        if logger.Level != Error </span><span class="cov0" title="0">{
+                logger.log("[ERROR]\t\t"+err.Error(), logger.ErrorColor)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package validation
 
 import (
         "net/http"
@@ -538,7 +767,7 @@ func AdminValidator(c *gin.Context) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file8" style="display: none">package validation
+		<pre class="file" id="file9" style="display: none">package validation
 
 import (
         "net/http"
